@@ -11,7 +11,14 @@ interface InitializeResult {
 
 export const initialize = (message: RequestMessage): InitializeResult => {
   return {
-    capabilities: { completionProvider: {}, textDocumentSync: 1 },
+    capabilities: {
+      completionProvider: {},
+      textDocumentSync: 1,
+      diagnosticProvider: {
+        interFileDependencies: false,
+        workspaceDiagnostics: false,
+      },
+    },
     serverInfo: {
       name: "lsp-test",
       version: "0.0.1",

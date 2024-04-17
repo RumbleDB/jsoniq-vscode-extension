@@ -2,7 +2,9 @@ import { RequestMessage } from "../../server";
 import * as fs from "fs";
 import { documents, TextDocumentIdentifier } from "../../documents";
 import log from "../../log";
+import { Position } from "../../types";
 
+const MAX_LENGTH = 100;
 const words = fs.readFileSync("/usr/share/dict/words").toString().split("\n");
 
 type CompletionItem = {
@@ -16,11 +18,6 @@ interface CompletionList {
 interface TextDocumentPositionParams {
   textDocument: TextDocumentIdentifier;
   position: Position;
-}
-
-interface Position {
-  line: number;
-  character: number;
 }
 
 interface CompletionParams extends TextDocumentPositionParams {}
@@ -41,13 +38,13 @@ export const completion = (message: RequestMessage): CompletionList | null => {
     .filter((word) => {
       return word.startsWith(currentPrefix);
     })
-    .slice(0, 1000)
+    .slice(0, MAX_LENGTH)
     .map((word) => {
       return { label: word };
     });
 
   return {
-    isIncomplete: true,
+    isIncomplete: items.length === MAX_LENGTH,
     items,
   };
 };
