@@ -1,15 +1,15 @@
 {
-  "name": "REPLACE_ME",
-  "description": "REPLACE_ME",
+  "name": "JSONiq Syntax Highlighting",
+  "description": "JSONiq syntax highlighting for Visual Studio Code",
   "version": "1.0.0",
-  "author": "REPLACE_ME",
+  "author": "David-Marian Buzatu",
   "license": "MIT",
   "engines": {
     "node": "*"
   },
   "repository": {
     "type": "git",
-    "url": "REPLACE_ME"
+    "url": "https://github.com/DavidBuzatu-Marian/Jsoniq-LanguageServer"
   },
   "dependencies": {}
 }

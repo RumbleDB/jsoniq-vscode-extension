@@ -11,16 +11,9 @@ interface InitializeResult {
 
 export const initialize = (message: RequestMessage): InitializeResult => {
   return {
-    capabilities: {
-      completionProvider: {},
-      textDocumentSync: 1,
-      diagnosticProvider: {
-        interFileDependencies: false,
-        workspaceDiagnostics: false,
-      },
-    },
+    capabilities: {},
     serverInfo: {
-      name: "lsp-test",
+      name: "jsoniq-language-server",
       version: "0.0.1",
     },
   };
