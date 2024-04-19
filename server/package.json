@@ -7,9 +7,17 @@
   "engines": {
     "node": "*"
   },
+  "scripts": {
+    "antlr4ts": "antlr4ts -visitor ./src/grammar/jsoniq.g4"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/DavidBuzatu-Marian/Jsoniq-LanguageServer"
   },
-  "dependencies": {}
+  "dependencies": {
+    "antlr4ts": "^0.5.0-alpha.4"
+  },
+  "devDependencies": {
+    "antlr4ts-cli": "^0.5.0-alpha.4"
+  }
 }

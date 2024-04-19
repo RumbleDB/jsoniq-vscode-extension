@@ -1,5 +1,6 @@
 import log from "./log";
 import { initialize } from "./methods/initialize";
+import { semanticTokens } from "./methods/semanticHighlighting/semanticTokens";
 import { didChange } from "./methods/textDocument/didChange";
 
 interface Message {
@@ -15,13 +16,16 @@ export interface RequestMessage extends NotificationMessage {
   id: number | string;
 }
 
-type RequestMethod = (message: RequestMessage) => ReturnType<typeof initialize>;
+type RequestMethod = (
+  message: RequestMessage
+) => ReturnType<typeof initialize> | ReturnType<typeof semanticTokens>;
 
 type NotificationMethod = (message: NotificationMessage) => void;
 
 const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
   initialize,
   "textDocument/didChange": didChange,
+  "textDocument/semanticTokens": semanticTokens,
 };
 
 const respond = (id: RequestMessage["id"], result: object | null) => {

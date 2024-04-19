@@ -1,10 +1,10 @@
 {
-  "name": "REPLACE_ME",
-  "description": "REPLACE_ME",
-  "author": "REPLACE_ME",
+  "name": "JSONiq Syntax Highlighting",
+  "description": "JSONiq syntax highlighting for Visual Studio Code",
+  "author": "David-Marian Buzatu",
   "license": "MIT",
   "version": "1.0.0",
-  "publisher": "REPLACE_ME",
+  "publisher": "David-Marian Buzatu",
   "categories": [],
   "engines": {
     "vscode": "^1.75.0"
