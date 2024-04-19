@@ -1,10 +1,6 @@
 // Generated from ./src/grammar/jsoniq.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
-// Java header
-package org.rumbledb.parser;
-
-
 import { ParseTreeVisitor } from "antlr4ts/tree/ParseTreeVisitor";
 
 import { ModuleAndThisIsItContext } from "./jsoniqParser";

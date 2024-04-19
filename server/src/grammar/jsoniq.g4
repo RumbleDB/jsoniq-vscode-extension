@@ -1,10 +1,5 @@
 grammar jsoniq;
 
-@header {
-// Java header
-package org.rumbledb.parser;
-}
-
 moduleAndThisIsIt: module EOF;
 
 module: (Kjsoniq Kversion vers = stringLiteral ';')? (

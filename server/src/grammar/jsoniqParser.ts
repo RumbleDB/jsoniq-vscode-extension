@@ -1,10 +1,6 @@
 // Generated from ./src/grammar/jsoniq.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
-// Java header
-package org.rumbledb.parser;
-
-
 import { ATN } from "antlr4ts/atn/ATN";
 import { ATNDeserializer } from "antlr4ts/atn/ATNDeserializer";
 import { FailedPredicateException } from "antlr4ts/FailedPredicateException";
@@ -4719,10 +4715,10 @@ export class jsoniqParser extends Parser {
 			if (_la === jsoniqParser.T__3 || ((((_la - 36)) & ~0x1F) === 0 && ((1 << (_la - 36)) & ((1 << (jsoniqParser.T__35 - 36)) | (1 << (jsoniqParser.T__36 - 36)) | (1 << (jsoniqParser.T__37 - 36)) | (1 << (jsoniqParser.T__38 - 36)) | (1 << (jsoniqParser.T__39 - 36)) | (1 << (jsoniqParser.T__40 - 36)) | (1 << (jsoniqParser.T__41 - 36)) | (1 << (jsoniqParser.T__42 - 36)) | (1 << (jsoniqParser.T__43 - 36)) | (1 << (jsoniqParser.T__44 - 36)) | (1 << (jsoniqParser.T__45 - 36)))) !== 0)) {
 				{
 				this.state = 956;
-				_localctx.__tset2002 = this._input.LT(1);
+				_localctx.__tset1997 = this._input.LT(1);
 				_la = this._input.LA(1);
 				if (!(_la === jsoniqParser.T__3 || ((((_la - 36)) & ~0x1F) === 0 && ((1 << (_la - 36)) & ((1 << (jsoniqParser.T__35 - 36)) | (1 << (jsoniqParser.T__36 - 36)) | (1 << (jsoniqParser.T__37 - 36)) | (1 << (jsoniqParser.T__38 - 36)) | (1 << (jsoniqParser.T__39 - 36)) | (1 << (jsoniqParser.T__40 - 36)) | (1 << (jsoniqParser.T__41 - 36)) | (1 << (jsoniqParser.T__42 - 36)) | (1 << (jsoniqParser.T__43 - 36)) | (1 << (jsoniqParser.T__44 - 36)) | (1 << (jsoniqParser.T__45 - 36)))) !== 0))) {
-					_localctx.__tset2002 = this._errHandler.recoverInline(this);
+					_localctx.__tset1997 = this._errHandler.recoverInline(this);
 				} else {
 					if (this._input.LA(1) === Token.EOF) {
 						this.matchedEOF = true;
@@ -4731,7 +4727,7 @@ export class jsoniqParser extends Parser {
 					this._errHandler.reportMatch(this);
 					this.consume();
 				}
-				_localctx._op.push(_localctx.__tset2002);
+				_localctx._op.push(_localctx.__tset1997);
 				this.state = 957;
 				_localctx._stringConcatExpr = this.stringConcatExpr();
 				_localctx._rhs.push(_localctx._stringConcatExpr);
@@ -4854,10 +4850,10 @@ export class jsoniqParser extends Parser {
 					{
 					{
 					this.state = 974;
-					_localctx.__tset2120 = this._input.LT(1);
+					_localctx.__tset2115 = this._input.LT(1);
 					_la = this._input.LA(1);
 					if (!(_la === jsoniqParser.T__47 || _la === jsoniqParser.T__48)) {
-						_localctx.__tset2120 = this._errHandler.recoverInline(this);
+						_localctx.__tset2115 = this._errHandler.recoverInline(this);
 					} else {
 						if (this._input.LA(1) === Token.EOF) {
 							this.matchedEOF = true;
@@ -4866,7 +4862,7 @@ export class jsoniqParser extends Parser {
 						this._errHandler.reportMatch(this);
 						this.consume();
 					}
-					_localctx._op.push(_localctx.__tset2120);
+					_localctx._op.push(_localctx.__tset2115);
 					this.state = 975;
 					_localctx._multiplicativeExpr = this.multiplicativeExpr();
 					_localctx._rhs.push(_localctx._multiplicativeExpr);
@@ -4910,10 +4906,10 @@ export class jsoniqParser extends Parser {
 				{
 				{
 				this.state = 982;
-				_localctx.__tset2153 = this._input.LT(1);
+				_localctx.__tset2148 = this._input.LT(1);
 				_la = this._input.LA(1);
 				if (!(_la === jsoniqParser.T__10 || ((((_la - 50)) & ~0x1F) === 0 && ((1 << (_la - 50)) & ((1 << (jsoniqParser.T__49 - 50)) | (1 << (jsoniqParser.T__50 - 50)) | (1 << (jsoniqParser.T__51 - 50)))) !== 0))) {
-					_localctx.__tset2153 = this._errHandler.recoverInline(this);
+					_localctx.__tset2148 = this._errHandler.recoverInline(this);
 				} else {
 					if (this._input.LA(1) === Token.EOF) {
 						this.matchedEOF = true;
@@ -4922,7 +4918,7 @@ export class jsoniqParser extends Parser {
 					this._errHandler.reportMatch(this);
 					this.consume();
 				}
-				_localctx._op.push(_localctx.__tset2153);
+				_localctx._op.push(_localctx.__tset2148);
 				this.state = 983;
 				_localctx._instanceOfExpr = this.instanceOfExpr();
 				_localctx._rhs.push(_localctx._instanceOfExpr);
@@ -5330,10 +5326,10 @@ export class jsoniqParser extends Parser {
 				{
 				{
 				this.state = 1036;
-				_localctx.__tset2350 = this._input.LT(1);
+				_localctx.__tset2345 = this._input.LT(1);
 				_la = this._input.LA(1);
 				if (!(_la === jsoniqParser.T__47 || _la === jsoniqParser.T__48)) {
-					_localctx.__tset2350 = this._errHandler.recoverInline(this);
+					_localctx.__tset2345 = this._errHandler.recoverInline(this);
 				} else {
 					if (this._input.LA(1) === Token.EOF) {
 						this.matchedEOF = true;
@@ -5342,7 +5338,7 @@ export class jsoniqParser extends Parser {
 					this._errHandler.reportMatch(this);
 					this.consume();
 				}
-				_localctx._op.push(_localctx.__tset2350);
+				_localctx._op.push(_localctx.__tset2345);
 				}
 				}
 				this.state = 1041;
@@ -11315,7 +11311,7 @@ export class ComparisonExprContext extends ParserRuleContext {
 	public _s44!: Token;
 	public _s45!: Token;
 	public _s46!: Token;
-	public __tset2002!: Token;
+	public __tset1997!: Token;
 	public _stringConcatExpr!: StringConcatExprContext;
 	public _rhs: StringConcatExprContext[] = [];
 	public stringConcatExpr(): StringConcatExprContext[];
@@ -11443,7 +11439,7 @@ export class AdditiveExprContext extends ParserRuleContext {
 	public _s48!: Token;
 	public _op: Token[] = [];
 	public _s49!: Token;
-	public __tset2120!: Token;
+	public __tset2115!: Token;
 	public _multiplicativeExpr!: MultiplicativeExprContext;
 	public _rhs: MultiplicativeExprContext[] = [];
 	public multiplicativeExpr(): MultiplicativeExprContext[];
@@ -11490,7 +11486,7 @@ export class MultiplicativeExprContext extends ParserRuleContext {
 	public _s50!: Token;
 	public _s51!: Token;
 	public _s52!: Token;
-	public __tset2153!: Token;
+	public __tset2148!: Token;
 	public _instanceOfExpr!: InstanceOfExprContext;
 	public _rhs: InstanceOfExprContext[] = [];
 	public instanceOfExpr(): InstanceOfExprContext[];
@@ -11822,7 +11818,7 @@ export class UnaryExprContext extends ParserRuleContext {
 	public _s49!: Token;
 	public _op: Token[] = [];
 	public _s48!: Token;
-	public __tset2350!: Token;
+	public __tset2345!: Token;
 	public _main_expr!: ValueExprContext;
 	public valueExpr(): ValueExprContext {
 		return this.getRuleContext(0, ValueExprContext);

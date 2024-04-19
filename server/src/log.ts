@@ -1,6 +1,6 @@
 import * as fs from "fs";
 
-const log = fs.createWriteStream("/tmp/lsp.log");
+const log = fs.createWriteStream("/tmp/lsp1.log");
 
 export default {
   write: (message: object | unknown) => {

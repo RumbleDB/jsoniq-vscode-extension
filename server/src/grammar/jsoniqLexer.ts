@@ -1,10 +1,6 @@
 // Generated from ./src/grammar/jsoniq.g4 by ANTLR 4.9.0-SNAPSHOT
 
 
-// Java header
-package org.rumbledb.parser;
-
-
 import { ATN } from "antlr4ts/atn/ATN";
 import { ATNDeserializer } from "antlr4ts/atn/ATNDeserializer";
 import { CharStream } from "antlr4ts/CharStream";

@@ -1,6 +1,8 @@
-import { TextDocumentIdentifier } from "../../documents";
+import { TextDocumentIdentifier, documents } from "../../documents";
 import { RequestMessage } from "../../server";
 import log from "../../log";
+import { CharStreams } from "antlr4ts";
+import { jsoniqLexer } from "../../grammar/jsoniqLexer";
 
 type ProgressToken = number | string;
 interface WorkDoneProgressParams {
@@ -22,7 +24,16 @@ interface SemanticTokens {
 
 export const semanticTokens = (message: RequestMessage): SemanticTokens => {
   const params = message.params as SemanticTokensParams;
-  log.write(params);
+  const content = documents.get(params.textDocument.uri);
+  if (!content) {
+    return {
+      data: [],
+    };
+  }
+  let inputStream = CharStreams.fromString(content);
+  let lexer = new jsoniqLexer(inputStream);
+  let tokens = lexer.getAllTokens().filter((token) => token.text !== " ");
+  log.write(`Tokens: ${tokens.map((token) => token.text).join(", ")}`);
   return {
     data: [],
   };

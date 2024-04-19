@@ -2,6 +2,7 @@ import log from "./log";
 import { initialize } from "./methods/initialize";
 import { semanticTokens } from "./methods/semanticHighlighting/semanticTokens";
 import { didChange } from "./methods/textDocument/didChange";
+import { didOpen } from "./methods/textDocument/didOpen";
 
 interface Message {
   jsonrpc: string;
@@ -25,7 +26,8 @@ type NotificationMethod = (message: NotificationMessage) => void;
 const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
   initialize,
   "textDocument/didChange": didChange,
-  "textDocument/semanticTokens": semanticTokens,
+  "textDocument/semanticTokens/full": semanticTokens,
+  "textDocument/didOpen": didOpen,
 };
 
 const respond = (id: RequestMessage["id"], result: object | null) => {
