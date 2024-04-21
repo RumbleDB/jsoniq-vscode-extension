@@ -79,11 +79,11 @@ const parseTypeAndModifier = (
         { type: "namespace", typeNumber: tokenTypes["namespace"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
-    case "declare":
     case "function":
+    case "let":
     case "variable":
       return [
-        { type: "type", typeNumber: tokenTypes["type"] },
+        { type: "local_storage", typeNumber: tokenTypes["local_storage"] },
         {
           type: "declaration",
           typeNumber:
@@ -117,6 +117,7 @@ const parseTypeAndModifier = (
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
     case ":=":
+    case "=":
     case "+":
     case "-":
     case "*":
@@ -138,7 +139,6 @@ const parseTypeAndModifier = (
         { type: "variable", typeNumber: tokenTypes["variable"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
-    case "let":
     case "for":
     case "where":
     case "group":
@@ -149,6 +149,8 @@ const parseTypeAndModifier = (
     case "as":
     case "at":
     case "in":
+    case "declare":
+    case "import":
     case "return":
       return [
         { type: "keyword", typeNumber: tokenTypes["keyword"] },
@@ -159,10 +161,21 @@ const parseTypeAndModifier = (
         { type: "function", typeNumber: tokenTypes["function"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
+    case "namespace":
+      return [
+        { type: "namespace", typeNumber: tokenTypes["namespace"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
     case token.match(/(?<=\")(.*?)(?=\")/)?.input:
       // source: https://regex101.com/library/Waah7L
       return [
         { type: "string", typeNumber: tokenTypes["string"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case token.match(/^\d+$/)?.input:
+      // source: Copilot
+      return [
+        { type: "number", typeNumber: tokenTypes["number"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
     case ";":

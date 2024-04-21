@@ -21,6 +21,15 @@
         "description": "A template type for declaration coloring."
       }
     ],
+    "semanticTokenScopes": [
+      {
+        "scopes": {
+          "local_storage": [
+            "storage.type"
+          ]
+        }
+      }
+    ],
     "semanticTokenModifiers": []
   },
   "scripts": {
