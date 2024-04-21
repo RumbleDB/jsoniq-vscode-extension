@@ -1,8 +1,15 @@
 import { TextDocumentIdentifier, documents } from "../../documents";
 import { RequestMessage } from "../../server";
 import log from "../../log";
-import { CharStreams } from "antlr4ts";
+import { CharStreams, Token } from "antlr4ts";
 import { jsoniqLexer } from "../../grammar/jsoniqLexer";
+import {
+  SemanticToken,
+  TokenType,
+  encodeSemanticTokens,
+  tokenModifiers,
+  tokenTypes,
+} from "./tokenLegend";
 
 type ProgressToken = number | string;
 interface WorkDoneProgressParams {
@@ -33,8 +40,141 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
   let inputStream = CharStreams.fromString(content);
   let lexer = new jsoniqLexer(inputStream);
   let tokens = lexer.getAllTokens().filter((token) => token.text !== " ");
-  log.write(`Tokens: ${tokens.map((token) => token.text).join(", ")}`);
+  let parsedTokens: SemanticToken[] = [];
+  tokens.forEach((token: Token) => {
+    let tokenLength = token.text?.length || 0;
+    let tokenTypeAndModifier = parseTypeAndModifier(token.text);
+
+    let tokenDetails: SemanticToken = {
+      tokenType: tokenTypeAndModifier[0],
+      tokenModifiers: tokenTypeAndModifier[1],
+      startIdx: { line: token.line - 1, index: token.charPositionInLine },
+      endIdx: {
+        line: token.line - 1,
+        index: token.charPositionInLine + tokenLength,
+      },
+      tokenLength: tokenLength,
+    };
+    parsedTokens.push(tokenDetails);
+  });
+  log.write("Tokens: " + tokens);
+  log.write("Semantic tokens: " + JSON.stringify(parsedTokens));
   return {
-    data: [],
+    data: encodeSemanticTokens(parsedTokens),
   };
+};
+
+const parseTypeAndModifier = (
+  token: string | undefined
+): [TokenType, TokenType] => {
+  if (token === undefined) {
+    return [
+      { type: "string", typeNumber: tokenTypes["string"] },
+      { type: "declaration", typeNumber: 0 },
+    ];
+  }
+  switch (token) {
+    case "module":
+      return [
+        { type: "namespace", typeNumber: tokenTypes["namespace"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case "declare":
+    case "function":
+    case "variable":
+      return [
+        { type: "type", typeNumber: tokenTypes["type"] },
+        {
+          type: "declaration",
+          typeNumber:
+            tokenModifiers["declaration"] | tokenModifiers["definition"],
+        },
+      ];
+    case "external":
+      return [
+        { type: "keyword", typeNumber: tokenTypes["keyword"] },
+        {
+          type: "declaration",
+          typeNumber: tokenModifiers["declaration"] | tokenModifiers["static"],
+        },
+      ];
+    case "{":
+    case "}":
+    case "[":
+    case "]":
+    case "(":
+    case ")":
+      return [
+        { type: "label", typeNumber: tokenTypes["label"] },
+        {
+          type: "block",
+          typeNumber: tokenModifiers["block"] | tokenModifiers["definition"],
+        },
+      ];
+    case "%":
+      return [
+        { type: "comment", typeNumber: tokenTypes["comment"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case ":=":
+    case "+":
+    case "-":
+    case "*":
+    case "/":
+    case "eq":
+    case "ne":
+    case "lt":
+    case "le":
+    case "gt":
+    case "ge":
+    case "and":
+    case "or":
+      return [
+        { type: "operator", typeNumber: tokenTypes["operator"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case "$":
+      return [
+        { type: "variable", typeNumber: tokenTypes["variable"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case "let":
+    case "for":
+    case "where":
+    case "group":
+    case "by":
+    case "order":
+    case "ascending":
+    case "descending":
+    case "as":
+    case "at":
+    case "in":
+    case "return":
+      return [
+        { type: "keyword", typeNumber: tokenTypes["keyword"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case "function":
+      return [
+        { type: "function", typeNumber: tokenTypes["function"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case token.match(/(?<=\")(.*?)(?=\")/)?.input:
+      // source: https://regex101.com/library/Waah7L
+      return [
+        { type: "string", typeNumber: tokenTypes["string"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case ";":
+      return [
+        { type: "label", typeNumber: tokenTypes["label"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    default: {
+      return [
+        { type: "variable", typeNumber: tokenTypes["variable"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    }
+  }
 };

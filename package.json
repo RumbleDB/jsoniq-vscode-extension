@@ -14,7 +14,14 @@
   ],
   "main": "./client/out/extension",
   "contributes": {
-    "configuration": {}
+    "semanticTokenTypes": [
+      {
+        "id": "local_storage",
+        "superType": "storage",
+        "description": "A template type for declaration coloring."
+      }
+    ],
+    "semanticTokenModifiers": []
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
