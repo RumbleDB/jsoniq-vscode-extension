@@ -57,6 +57,7 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
       },
       tokenLength: tokenLength,
     };
+    // log.write("Token: " + token.text + "\n");
     parsedTokens.push(tokenDetails);
   });
 
@@ -76,6 +77,7 @@ const parseTypeAndModifier = (
   }
   switch (token) {
     case "module":
+    case "version":
       return [
         { type: "keyword", typeNumber: tokenTypes["keyword"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
@@ -92,6 +94,17 @@ const parseTypeAndModifier = (
         },
       ];
     case "external":
+    case "context":
+    case "type":
+      return [
+        { type: "keyword", typeNumber: tokenTypes["keyword"] },
+        {
+          type: "declaration",
+          typeNumber: tokenModifiers["declaration"] | tokenModifiers["static"],
+        },
+      ];
+    case "true":
+    case "false":
       return [
         { type: "keyword", typeNumber: tokenTypes["keyword"] },
         {
@@ -121,28 +134,82 @@ const parseTypeAndModifier = (
     case "ge":
     case "and":
     case "or":
+    case "not":
       return [
         { type: "operator", typeNumber: tokenTypes["operator"] },
-        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+        { type: "definition", typeNumber: tokenModifiers["definition"] },
       ];
     case "$":
       return [
         { type: "variable", typeNumber: tokenTypes["variable"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
+    case "count":
+    case "position":
+      return [
+        { type: "function", typeNumber: tokenTypes["function"] },
+        {
+          type: "declaration",
+          typeNumber: tokenModifiers["declaration"] | tokenModifiers["static"],
+        },
+      ];
     case "for":
+    case "typeswitch":
+    case "switch":
+    case "if":
+    case "then":
+    case "else":
+    case "try":
+    case "catch":
     case "where":
     case "group":
     case "by":
     case "order":
-    case "ascending":
-    case "descending":
     case "as":
     case "at":
     case "in":
     case "declare":
     case "import":
+    case "replace":
+    case "json":
+    case "value":
+    case "of":
+    case "rename":
+    case "insert":
+    case "delete":
+    case "copy":
+    case "append":
+    case "with":
+    case "modify":
+    case "into":
+    case "break":
+    case "loop":
+    case "continue":
+    case "exit":
+    case "returning":
+    case "while":
+    case "annotate":
+    case "validate":
+    case "castable":
+    case "cast":
+    case "treat":
+    case "is":
+    case "statically":
+    case "instance":
+    case "of":
+    case "to":
+    case "collation":
+    case "satisfies":
+    case "stable":
+    case "empty":
+    case "allowing":
     case "return":
+    case "least":
+    case "greatest":
+    case "some":
+    case "every":
+    case "ascending":
+    case "descending":
       return [
         { type: "keyword", typeNumber: tokenTypes["keyword"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
@@ -153,6 +220,7 @@ const parseTypeAndModifier = (
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
     case "namespace":
+    case "jsoniq":
       return [
         { type: "namespace", typeNumber: tokenTypes["namespace"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
@@ -180,6 +248,7 @@ const parseTypeAndModifier = (
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
     default: {
+      log.write("Token not found: " + token + "\n");
       return [
         { type: "variable", typeNumber: tokenTypes["variable"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
