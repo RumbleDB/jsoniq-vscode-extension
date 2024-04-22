@@ -79,6 +79,5 @@ export const encodeSemanticTokens = (tokens: SemanticToken[]): number[] => {
     result.push(token.tokenType.typeNumber);
     result.push(token.tokenModifiers.typeNumber);
   }
-  log.write("Encoded semantic tokens: " + result);
   return result;
 };

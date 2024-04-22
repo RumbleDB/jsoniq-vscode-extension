@@ -44,7 +44,9 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
   tokens.forEach((token: Token) => {
     let tokenLength = token.text?.length || 0;
     let tokenTypeAndModifier = parseTypeAndModifier(token.text);
-
+    if (tokenTypeAndModifier === null) {
+      return;
+    }
     let tokenDetails: SemanticToken = {
       tokenType: tokenTypeAndModifier[0],
       tokenModifiers: tokenTypeAndModifier[1],
@@ -57,8 +59,7 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
     };
     parsedTokens.push(tokenDetails);
   });
-  log.write("Tokens: " + tokens);
-  log.write("Semantic tokens: " + JSON.stringify(parsedTokens));
+
   return {
     data: encodeSemanticTokens(parsedTokens),
   };
@@ -66,7 +67,7 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
 
 const parseTypeAndModifier = (
   token: string | undefined
-): [TokenType, TokenType] => {
+): [TokenType, TokenType] | null => {
   if (token === undefined) {
     return [
       { type: "string", typeNumber: tokenTypes["string"] },
@@ -76,7 +77,7 @@ const parseTypeAndModifier = (
   switch (token) {
     case "module":
       return [
-        { type: "namespace", typeNumber: tokenTypes["namespace"] },
+        { type: "keyword", typeNumber: tokenTypes["keyword"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
     case "function":
@@ -104,18 +105,8 @@ const parseTypeAndModifier = (
     case "]":
     case "(":
     case ")":
-      return [
-        { type: "label", typeNumber: tokenTypes["label"] },
-        {
-          type: "block",
-          typeNumber: tokenModifiers["block"] | tokenModifiers["definition"],
-        },
-      ];
-    case "%":
-      return [
-        { type: "comment", typeNumber: tokenTypes["comment"] },
-        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
-      ];
+      // Let the syntax highlighter handle these
+      return null;
     case ":=":
     case "=":
     case "+":
@@ -181,6 +172,11 @@ const parseTypeAndModifier = (
     case ";":
       return [
         { type: "label", typeNumber: tokenTypes["label"] },
+        { type: "declaration", typeNumber: tokenModifiers["declaration"] },
+      ];
+    case token.match(/\(:.*?(:\))/)?.input:
+      return [
+        { type: "comment", typeNumber: tokenTypes["comment"] },
         { type: "declaration", typeNumber: tokenModifiers["declaration"] },
       ];
     default: {

@@ -14,6 +14,15 @@
   ],
   "main": "./client/out/extension",
   "contributes": {
+    "languages": [
+      {
+        "id": "jsoniq",
+        "extensions": [
+          ".jq"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
     "semanticTokenTypes": [
       {
         "id": "local_storage",
