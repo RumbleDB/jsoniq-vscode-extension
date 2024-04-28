@@ -79,6 +79,8 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
       tokenCounter = parseAttributes(parsedTokens, lexerTokens, tokenCounter);
     } else if (tokenText === ".") {
       tokenCounter = parseAttributes(parsedTokens, lexerTokens, tokenCounter);
+    } else if (tokenText === "as") {
+      tokenCounter = parseTypeCasting(parsedTokens, lexerTokens, tokenCounter);
     } else {
       parseAndStoreToken(parsedTokens, lexerTokens[tokenCounter]);
       ++tokenCounter;
@@ -177,190 +179,29 @@ const parseAndStoreTokenWithModifier = (
   parsedTokens.push(tokenDetails);
 };
 
-// const parseTypeAndModifier = (
-//   token: string | undefined
-// ): [TokenType, TokenType] | null => {
-//   if (token === undefined) {
-//     return [{ typeNumber: tokenTypes["string"] }, { typeNumber: 0 }];
-//   }
-//   switch (token) {
-//     case "module":
-//     case "version":
-//       return [
-//         { typeNumber: tokenTypes["keyword"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     case "function":
-//     case "let":
-//     case "variable":
-//       return [
-//         { typeNumber: tokenTypes["local_storage"] },
-//         {
-//           typeNumber:
-//             tokenModifiers["declaration"] | tokenModifiers["definition"],
-//         },
-//       ];
-//     case "external":
-//     case "context":
-//     case "type":
-//       return [
-//         { typeNumber: tokenTypes["keyword"] },
-//         {
-//           typeNumber: tokenModifiers["declaration"] | tokenModifiers["static"],
-//         },
-//       ];
-//     case "true":
-//     case "false":
-//       return [
-//         { typeNumber: tokenTypes["keyword"] },
-//         {
-//           typeNumber: tokenModifiers["declaration"] | tokenModifiers["static"],
-//         },
-//       ];
-//     case "{":
-//     case "}":
-//     case "[":
-//     case "]":
-//     case "(":
-//     case ")":
-//       // Let the syntax highlighter handle these
-//       return null;
-//     case ":=":
-//     case "=":
-//     case "+":
-//     case "-":
-//     case "*":
-//     case "/":
-//       return [
-//         { typeNumber: tokenTypes["operator"] },
-//         { typeNumber: tokenModifiers["definition"] },
-//       ];
-//     case "$":
-//       return [
-//         { typeNumber: tokenTypes["variable"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     case "count":
-//     case "position":
-//       return [
-//         { typeNumber: tokenTypes["function"] },
-//         {
-//           typeNumber: tokenModifiers["declaration"] | tokenModifiers["static"],
-//         },
-//       ];
-//     case "for":
-//     case "typeswitch":
-//     case "switch":
-//     case "if":
-//     case "then":
-//     case "else":
-//     case "try":
-//     case "catch":
-//     case "where":
-//     case "group":
-//     case "by":
-//     case "order":
-//     case "as":
-//     case "at":
-//     case "in":
-//     case "declare":
-//     case "import":
-//     case "replace":
-//     case "json":
-//     case "value":
-//     case "of":
-//     case "rename":
-//     case "insert":
-//     case "delete":
-//     case "copy":
-//     case "append":
-//     case "with":
-//     case "modify":
-//     case "into":
-//     case "break":
-//     case "loop":
-//     case "continue":
-//     case "exit":
-//     case "returning":
-//     case "while":
-//     case "annotate":
-//     case "validate":
-//     case "castable":
-//     case "cast":
-//     case "treat":
-//     case "is":
-//     case "statically":
-//     case "instance":
-//     case "of":
-//     case "to":
-//     case "collation":
-//     case "satisfies":
-//     case "stable":
-//     case "empty":
-//     case "allowing":
-//     case "return":
-//     case "least":
-//     case "greatest":
-//     case "some":
-//     case "every":
-//     case "ascending":
-//     case "descending":
-//     case "eq":
-//     case "ne":
-//     case "lt":
-//     case "le":
-//     case "gt":
-//     case "ge":
-//     case "and":
-//     case "or":
-//     case "not":
-//       return [
-//         { typeNumber: tokenTypes["keyword"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     case "function":
-//       return [
-//         { typeNumber: tokenTypes["function"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     case "namespace":
-//     case "jsoniq":
-//       return [
-//         { typeNumber: tokenTypes["namespace"] },
-//         {
-//           typeNumber:
-//             tokenModifiers["declaration"] | tokenModifiers["definition"],
-//         },
-//       ];
-//     case ";":
-//     case ",":
-//       return [
-//         { typeNumber: tokenTypes["label"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     case token.match(/\(:.*?(:\))/)?.input:
-//       return [
-//         { typeNumber: tokenTypes["comment"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     case token.match(/^\d+$/)?.input:
-//       // source: Copilot
-//       return [
-//         { typeNumber: tokenTypes["number"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     case token.match(/(?<=\")(.*?)(?=\")/)?.input:
-//       // source: https://regex101.com/library/Waah7L
-//       return [
-//         { typeNumber: tokenTypes["string"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     default: {
-//       log.write("Token not found: " + token + "\n");
-//       return [
-//         { typeNumber: tokenTypes["variable"] },
-//         { typeNumber: tokenModifiers["declaration"] },
-//       ];
-//     }
-//   }
-// };
+const parseTypeCasting = (
+  parsedTokens: SemanticToken[],
+  lexerTokens: Token[],
+  tokenCounter: number
+): number => {
+  let currentCount = tokenCounter;
+  // Parse "as" token
+  parseAndStoreToken(parsedTokens, lexerTokens[currentCount]);
+  ++currentCount;
+  // Skip whitespace
+  while (
+    currentCount < lexerTokens.length &&
+    separatorSet.has(lexerTokens[currentCount].text ?? "")
+  ) {
+    ++currentCount;
+  }
+  if (currentCount < lexerTokens.length) {
+    let currToken = lexerTokens[currentCount];
+    log.write(`Token: ${currToken}`);
+    parseAndStoreTokenWithModifier(parsedTokens, currToken, [
+      { typeNumber: tokenTypes["type"] },
+      { typeNumber: tokenModifiers["static"] },
+    ]);
+  }
+  return currentCount;
+};
