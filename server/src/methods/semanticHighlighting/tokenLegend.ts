@@ -12,7 +12,6 @@ interface Position {
 }
 
 export interface TokenType {
-  type: string;
   typeNumber: number;
 }
 
@@ -39,6 +38,8 @@ export const tokenTypes = {
   decorator: 11,
   label: 12,
   local_storage: 13,
+  unknown: 14,
+  punctuation: 15
 };
 
 export const tokenModifiers = {
@@ -48,6 +49,8 @@ export const tokenModifiers = {
   modification: 1 << 3,
   functionScope: 1 << 4,
   block: 1 << 5,
+  documentation: 1 << 6,
+  readonly: 1 << 7,
 };
 
 export const tokenLegend: SemanticTokensLegend = {
