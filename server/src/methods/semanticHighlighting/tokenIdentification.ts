@@ -1,5 +1,11 @@
+import { Token } from "antlr4ts";
+import {
+  SemanticToken,
+  TokenType,
+  tokenModifiers,
+  tokenTypes,
+} from "./tokenLegend";
 import log from "../../log";
-import { TokenType, tokenModifiers, tokenTypes } from "./tokenLegend";
 
 const keywordSet = new Set([
   "module",
@@ -7,8 +13,6 @@ const keywordSet = new Set([
   "external",
   "context",
   "type",
-  "true",
-  "false",
   "for",
   "typeswitch",
   "switch",
@@ -27,7 +31,6 @@ const keywordSet = new Set([
   "declare",
   "import",
   "replace",
-  "json",
   "value",
   "of",
   "rename",
@@ -69,6 +72,8 @@ const keywordSet = new Set([
   "ordering",
   "order",
   "ordered",
+  "case",
+  "default",
   "unordered",
   "eq",
   "ne",
@@ -153,52 +158,263 @@ const languageFunctionsSet = new Set([
 ]);
 
 const namespaceSet = new Set(["namespace", "jsoniq"]);
-export const separatorSet = new Set([" ", "\n", "\t", ";", ","]);
-export const punctuationSet = new Set([".", "[", "]", "(", ")", ","]);
-
+const constantsSet = new Set(["true", "false", "json"]);
 const commentMatchingRegexpr = /\(:.*?(:\))/;
-export const numberMatchingRegexpr = /\d+/;
 const stringMatchingRegexpr = /(?<=\")(.*?)(?=\")/;
 
-export const parseTypeAndModifier = (
-  token: string | undefined
-): [TokenType, TokenType] | null => {
-  if (token === undefined) {
-    return [{ typeNumber: tokenTypes["string"] }, { typeNumber: 0 }];
+const numberMatchingRegexpr = /\d+/;
+const separatorSet = new Set([" ", "\n", "\t", ";", ","]);
+const punctuationSet = new Set([".", "[", "]", "(", ")", ","]);
+
+export class TokensParser {
+  private _tokens: Token[];
+
+  constructor(tokens: Token[]) {
+    this._tokens = tokens;
   }
-  let resultTokenType = tokenTypes["unknown"];
-  let resultTokenModifier = 0;
-  if (keywordSet.has(token)) {
-    resultTokenType = tokenTypes["keyword"];
-    resultTokenModifier = tokenModifiers["declaration"];
-  } else if (localStorageSet.has(token)) {
-    resultTokenType = tokenTypes["local_storage"];
-    resultTokenModifier = tokenModifiers["declaration"];
-  } else if (operatorSet.has(token)) {
-    resultTokenType = tokenTypes["operator"];
-  } else if (languageFunctionsSet.has(token)) {
-    resultTokenType = tokenTypes["function"];
-    resultTokenModifier = tokenModifiers["defaultLibrary"];
-  } else if (namespaceSet.has(token)) {
-    resultTokenType = tokenTypes["namespace"];
-    resultTokenModifier = tokenModifiers["definition"];
-  } else if (token.match(commentMatchingRegexpr)?.input) {
-    resultTokenType = tokenTypes["comment"];
-    resultTokenModifier = tokenModifiers["declaration"];
-  } else if (token.match(numberMatchingRegexpr)?.input) {
-    resultTokenType = tokenTypes["number"];
-    resultTokenModifier = tokenModifiers["declaration"];
-  } else if (token.match(stringMatchingRegexpr)?.input) {
-    resultTokenType = tokenTypes["string"];
-    resultTokenModifier = tokenModifiers["declaration"];
+
+  public getSemanticTokens(): SemanticToken[] {
+    let parsedTokens: SemanticToken[] = [];
+    let tokenCounter = 0;
+    while (tokenCounter < this._tokens.length) {
+      let tokenText = this._tokens[tokenCounter].text;
+      if (tokenText === undefined) {
+        log.write(`Found token without text: ${this._tokens[tokenCounter]}`);
+        ++tokenCounter;
+        continue;
+      }
+      if (separatorSet.has(tokenText)) {
+        // Separator token does not need semantic coloring.
+        ++tokenCounter;
+        continue;
+      }
+      if (tokenText === "$") {
+        // Variable
+        tokenCounter = this.parseVariable(
+          parsedTokens,
+          this._tokens,
+          tokenCounter
+        );
+      } else if (tokenText === ".") {
+        // Attribute start
+        tokenCounter = this.parseAttributes(
+          parsedTokens,
+          this._tokens,
+          tokenCounter
+        );
+      } else if (tokenText === "as") {
+        // Type change
+        tokenCounter = this.parseTypeCasting(
+          parsedTokens,
+          this._tokens,
+          tokenCounter
+        );
+      } else if (tokenText === "%") {
+        // Annotation
+        tokenCounter = this.parseAnnotations(
+          parsedTokens,
+          this._tokens,
+          tokenCounter
+        );
+      } else {
+        // Other
+        this.parseAndStoreToken(parsedTokens, this._tokens[tokenCounter]);
+        ++tokenCounter;
+      }
+    }
+    return parsedTokens;
   }
-  if (staticModifierSet.has(token)) {
-    resultTokenModifier = resultTokenModifier | tokenModifiers["static"];
+
+  private parseAttributes(
+    parsedTokens: SemanticToken[],
+    lexerTokens: Token[],
+    tokenCounter: number
+  ): number {
+    let currCounter = tokenCounter;
+    let currToken = lexerTokens[currCounter];
+    while (
+      currCounter < lexerTokens.length &&
+      !separatorSet.has(currToken.text ?? "")
+    ) {
+      if (punctuationSet.has(currToken.text ?? "")) {
+        this.storeTokenWithModifier(parsedTokens, currToken, [
+          { typeNumber: tokenTypes["punctuation"] },
+          { typeNumber: tokenModifiers["declaration"] },
+        ]);
+      } else if (currToken.text === "$$") {
+        this.storeTokenWithModifier(parsedTokens, currToken, [
+          { typeNumber: tokenTypes["keyword"] },
+          {
+            typeNumber: tokenModifiers["declaration"],
+          },
+        ]);
+      } else if (currToken.text?.match(numberMatchingRegexpr)?.input) {
+        this.storeTokenWithModifier(parsedTokens, currToken, [
+          { typeNumber: tokenTypes["number"] },
+          {
+            typeNumber: tokenModifiers["readonly"],
+          },
+        ]);
+      } else {
+        this.storeTokenWithModifier(parsedTokens, currToken, [
+          { typeNumber: tokenTypes["property"] },
+          {
+            typeNumber:
+              tokenModifiers["definition"] | tokenModifiers["readonly"],
+          },
+        ]);
+      }
+      currToken = lexerTokens[++currCounter];
+    }
+
+    return currCounter;
   }
-  if (resultTokenType === tokenTypes["unknown"] && !separatorSet.has(token)) {
-    // It is a function invocation or declaration
-    resultTokenType = tokenTypes["function"];
-    resultTokenModifier = tokenModifiers["readonly"];
+
+  private parseTypeCasting(
+    parsedTokens: SemanticToken[],
+    lexerTokens: Token[],
+    tokenCounter: number
+  ): number {
+    let currentCount = tokenCounter;
+    // Parse "as" token
+    this.parseAndStoreToken(parsedTokens, lexerTokens[currentCount]);
+    ++currentCount;
+    // Skip whitespace
+    while (
+      currentCount < lexerTokens.length &&
+      separatorSet.has(lexerTokens[currentCount].text ?? "")
+    ) {
+      ++currentCount;
+    }
+    if (currentCount < lexerTokens.length) {
+      let currToken = lexerTokens[currentCount];
+      this.storeTokenWithModifier(parsedTokens, currToken, [
+        { typeNumber: tokenTypes["type"] },
+        { typeNumber: tokenModifiers["static"] },
+      ]);
+      currentCount++;
+    }
+    return currentCount;
   }
-  return [{ typeNumber: resultTokenType }, { typeNumber: resultTokenModifier }];
-};
+
+  private parseAnnotations(
+    parsedTokens: SemanticToken[],
+    lexerTokens: Token[],
+    tokenCounter: number
+  ): number {
+    let currentCount = tokenCounter;
+    let currentToken = lexerTokens[currentCount];
+    while (
+      currentCount < lexerTokens.length &&
+      !separatorSet.has(currentToken.text ?? "")
+    ) {
+      this.storeTokenWithModifier(parsedTokens, currentToken, [
+        { typeNumber: tokenTypes["decorator"] },
+        { typeNumber: tokenModifiers["static"] },
+      ]);
+      currentToken = lexerTokens[++currentCount];
+    }
+    return currentCount;
+  }
+
+  private parseVariable(
+    parsedTokens: SemanticToken[],
+    lexerTokens: Token[],
+    tokenCounter: number
+  ): number {
+    let currentCounter = tokenCounter;
+    this.storeTokenWithModifier(parsedTokens, lexerTokens[currentCounter], [
+      { typeNumber: tokenTypes["variable"] },
+      { typeNumber: tokenModifiers["declaration"] },
+    ]);
+    if (currentCounter + 1 === lexerTokens.length) {
+      return currentCounter;
+    }
+    let nextToken = lexerTokens[++currentCounter];
+    this.storeTokenWithModifier(parsedTokens, nextToken, [
+      { typeNumber: tokenTypes["variable"] },
+      { typeNumber: tokenModifiers["declaration"] },
+    ]);
+    if (currentCounter + 1 === lexerTokens.length) {
+      return currentCounter;
+    }
+    return this.parseAttributes(parsedTokens, lexerTokens, currentCounter);
+  }
+
+  private parseAndStoreToken(parsedTokens: SemanticToken[], token: Token) {
+    let tokenTypeAndModifier = this.parseTypeAndModifier(token.text);
+    if (tokenTypeAndModifier === null) {
+      return;
+    }
+    this.storeTokenWithModifier(parsedTokens, token, tokenTypeAndModifier);
+  }
+
+  private storeTokenWithModifier(
+    parsedTokens: SemanticToken[],
+    token: Token,
+    tokenTypeAndModifier: [TokenType, TokenType]
+  ) {
+    let tokenLength = token.text?.length || 0;
+    let tokenDetails: SemanticToken = {
+      tokenType: tokenTypeAndModifier[0],
+      tokenModifiers: tokenTypeAndModifier[1],
+      startIdx: { line: token.line - 1, index: token.charPositionInLine },
+      endIdx: {
+        line: token.line - 1,
+        index: token.charPositionInLine + tokenLength,
+      },
+      tokenLength: tokenLength,
+    };
+    parsedTokens.push(tokenDetails);
+  }
+
+  private parseTypeAndModifier(
+    token: string | undefined
+  ): [TokenType, TokenType] | null {
+    if (token === undefined) {
+      return [{ typeNumber: tokenTypes["string"] }, { typeNumber: 0 }];
+    }
+    let resultTokenType = tokenTypes["unknown"];
+    let resultTokenModifier = 0;
+    if (keywordSet.has(token)) {
+      resultTokenType = tokenTypes["keyword"];
+      resultTokenModifier = tokenModifiers["declaration"];
+    } else if (localStorageSet.has(token)) {
+      resultTokenType = tokenTypes["local_storage"];
+      resultTokenModifier = tokenModifiers["declaration"];
+    } else if (operatorSet.has(token)) {
+      resultTokenType = tokenTypes["operator"];
+    } else if (languageFunctionsSet.has(token)) {
+      resultTokenType = tokenTypes["function"];
+      resultTokenModifier = tokenModifiers["defaultLibrary"];
+    } else if (namespaceSet.has(token)) {
+      resultTokenType = tokenTypes["namespace"];
+      resultTokenModifier = tokenModifiers["definition"];
+    } else if (constantsSet.has(token)) {
+      resultTokenType = tokenTypes["variable"];
+      resultTokenModifier =
+        tokenModifiers["readonly"] | tokenModifiers["static"];
+    } else if (token.match(commentMatchingRegexpr)?.input) {
+      resultTokenType = tokenTypes["comment"];
+      resultTokenModifier = tokenModifiers["declaration"];
+    } else if (token.match(numberMatchingRegexpr)?.input) {
+      resultTokenType = tokenTypes["number"];
+      resultTokenModifier = tokenModifiers["declaration"];
+    } else if (token.match(stringMatchingRegexpr)?.input) {
+      resultTokenType = tokenTypes["string"];
+      resultTokenModifier = tokenModifiers["declaration"];
+    }
+    if (staticModifierSet.has(token)) {
+      resultTokenModifier = resultTokenModifier | tokenModifiers["static"];
+    }
+    if (resultTokenType === tokenTypes["unknown"] && !separatorSet.has(token)) {
+      // It is a function invocation or declaration
+      resultTokenType = tokenTypes["function"];
+      resultTokenModifier = tokenModifiers["readonly"];
+    }
+    return [
+      { typeNumber: resultTokenType },
+      { typeNumber: resultTokenModifier },
+    ];
+  }
+}

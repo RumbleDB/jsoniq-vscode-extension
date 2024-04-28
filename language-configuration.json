@@ -1,6 +1,8 @@
 {
+  // FROM : https://github.com/microsoft/vscode/blob/main/extensions/typescript-basics/language-configuration.json
   "comments": {
-    "lineComment": "(:"
+    "lineComment": "(:",
+    "blockComment": ["(:", ":)"]
   },
   "brackets": [
     ["{", "}"],
@@ -8,32 +10,114 @@
     ["(", ")"]
   ],
   "autoClosingPairs": [
-    { "open": "{", "close": "}" },
-    { "open": "[", "close": "]" },
-    { "open": "(", "close": ")" },
-    { "open": "'", "close": "'", "notIn": ["string", "comment"] },
-    { "open": "\"", "close": "\"", "notIn": ["string"] },
-    { "open": "`", "close": "`", "notIn": ["string", "comment"] },
-    { "open": "(:", "close": " :)", "notIn": ["string"] }
+    {
+      "open": "{",
+      "close": "}"
+    },
+    {
+      "open": "[",
+      "close": "]"
+    },
+    {
+      "open": "(",
+      "close": ")"
+    },
+    {
+      "open": "'",
+      "close": "'",
+      "notIn": ["string", "comment"]
+    },
+    {
+      "open": "\"",
+      "close": "\"",
+      "notIn": ["string"]
+    },
+    {
+      "open": "(:",
+      "close": " :)",
+      "notIn": ["string"]
+    }
   ],
-  "autoCloseBefore": ";:.,=}])>` \n\t",
   "surroundingPairs": [
     ["{", "}"],
     ["[", "]"],
     ["(", ")"],
     ["'", "'"],
-    ["\"", "\""],
-    ["`", "`"]
+    ["\"", "\""]
   ],
+  "colorizedBracketPairs": [
+    ["(", ")"],
+    ["[", "]"],
+    ["{", "}"]
+  ],
+  "autoCloseBefore": ";:.,=}])>` \n\t",
   "folding": {
     "markers": {
       "start": "^\\s*//\\s*#?region\\b",
       "end": "^\\s*//\\s*#?endregion\\b"
     }
   },
-  "wordPattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\~\\!\\@\\#\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>\\/\\?\\s]+)",
+  "wordPattern": {
+    "pattern": "(-?\\d*\\.\\d\\w*)|([^\\`\\@\\~\\!\\%\\^\\&\\*\\(\\)\\-\\=\\+\\[\\{\\]\\}\\\\\\|\\;\\:\\'\\\"\\,\\.\\<\\>/\\?\\s]+)"
+  },
   "indentationRules": {
-    "increaseIndentPattern": "^((?!\\/\\/).)*(\\{[^}\"'`]*|\\([^)\"'`]*|\\[[^\\]\"'`]*)$",
-    "decreaseIndentPattern": "^((?!.*?\\/\\*).*\\*/)?\\s*[\\)\\}\\]].*$"
-  }
+    "decreaseIndentPattern": {
+      "pattern": "^((?!.*?/\\*).*\\*/)?\\s*[\\}\\]\\)].*$"
+    },
+    "increaseIndentPattern": {
+      "pattern": "^((?!//).)*(\\{([^}\"'`/]*|(\\t|[ ])*//.*)|\\([^)\"'`/]*|\\[[^\\]\"'`/]*)$"
+    },
+    "indentNextLinePattern": {
+      "pattern": "^((.*=>\\s*)|((.*[^\\w]+|\\s*)(if|while|for)\\s*\\(.*\\)\\s*))$"
+    }
+  },
+  "onEnterRules": [
+    {
+      "beforeText": {
+        "pattern": "^\\s*(\\bcase\\s.+:|\\bdefault:)$"
+      },
+      "afterText": {
+        "pattern": "^(?!\\s*(\\bcase\\b|\\bdefault\\b))"
+      },
+      "action": {
+        "indent": "indent"
+      }
+    },
+    {
+      // Decrease indentation after single line if/else if/else, for, or while
+      "previousLineText": "^\\s*(((else ?)?if|for|while)\\s*\\(.*\\)\\s*|else\\s*)$",
+      // But make sure line doesn't have braces or is not another if statement
+      "beforeText": "^\\s+([^{i\\s]|i(?!f\\b))",
+      "action": {
+        "indent": "outdent"
+      }
+    },
+    // Indent when pressing enter from inside ()
+    {
+      "beforeText": "^.*\\([^\\)]*$",
+      "afterText": "^\\s*\\).*$",
+      "action": {
+        "indent": "indentOutdent",
+        "appendText": "\t"
+      }
+    },
+    // Indent when pressing enter from inside {}
+    {
+      "beforeText": "^.*\\{[^\\}]*$",
+      "afterText": "^\\s*\\}.*$",
+      "action": {
+        "indent": "indentOutdent",
+        "appendText": "\t"
+      }
+    },
+    // Indent when pressing enter from inside []
+    {
+      "beforeText": "^.*\\[[^\\]]*$",
+      "afterText": "^\\s*\\].*$",
+      "action": {
+        "indent": "indentOutdent",
+        "appendText": "\t"
+      }
+    }
+  ]
 }
