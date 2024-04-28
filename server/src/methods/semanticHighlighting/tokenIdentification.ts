@@ -1,3 +1,4 @@
+import log from "../../log";
 import { TokenType, tokenModifiers, tokenTypes } from "./tokenLegend";
 
 const keywordSet = new Set([
@@ -153,7 +154,7 @@ const languageFunctionsSet = new Set([
 
 const namespaceSet = new Set(["namespace", "jsoniq"]);
 export const separatorSet = new Set([" ", "\n", "\t", ";", ","]);
-export const punctuationSet = new Set([".", "[", "]", "(", ")"]);
+export const punctuationSet = new Set([".", "[", "]", "(", ")", ","]);
 
 const commentMatchingRegexpr = /\(:.*?(:\))/;
 export const numberMatchingRegexpr = /\d+/;
@@ -177,7 +178,7 @@ export const parseTypeAndModifier = (
     resultTokenType = tokenTypes["operator"];
   } else if (languageFunctionsSet.has(token)) {
     resultTokenType = tokenTypes["function"];
-    resultTokenModifier = tokenModifiers["static"];
+    resultTokenModifier = tokenModifiers["defaultLibrary"];
   } else if (namespaceSet.has(token)) {
     resultTokenType = tokenTypes["namespace"];
     resultTokenModifier = tokenModifiers["definition"];
@@ -193,6 +194,11 @@ export const parseTypeAndModifier = (
   }
   if (staticModifierSet.has(token)) {
     resultTokenModifier = resultTokenModifier | tokenModifiers["static"];
+  }
+  if (resultTokenType === tokenTypes["unknown"] && !separatorSet.has(token)) {
+    // It is a function invocation or declaration
+    resultTokenType = tokenTypes["function"];
+    resultTokenModifier = tokenModifiers["readonly"];
   }
   return [{ typeNumber: resultTokenType }, { typeNumber: resultTokenModifier }];
 };

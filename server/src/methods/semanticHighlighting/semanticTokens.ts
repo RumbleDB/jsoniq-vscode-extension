@@ -81,6 +81,8 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
       tokenCounter = parseAttributes(parsedTokens, lexerTokens, tokenCounter);
     } else if (tokenText === "as") {
       tokenCounter = parseTypeCasting(parsedTokens, lexerTokens, tokenCounter);
+    } else if (tokenText === "%") {
+      tokenCounter = parseAnnotations(parsedTokens, lexerTokens, tokenCounter);
     } else {
       parseAndStoreToken(parsedTokens, lexerTokens[tokenCounter]);
       ++tokenCounter;
@@ -197,11 +199,31 @@ const parseTypeCasting = (
   }
   if (currentCount < lexerTokens.length) {
     let currToken = lexerTokens[currentCount];
-    log.write(`Token: ${currToken}`);
     parseAndStoreTokenWithModifier(parsedTokens, currToken, [
       { typeNumber: tokenTypes["type"] },
       { typeNumber: tokenModifiers["static"] },
     ]);
+    currentCount++;
+  }
+  return currentCount;
+};
+
+const parseAnnotations = (
+  parsedTokens: SemanticToken[],
+  lexerTokens: Token[],
+  tokenCounter: number
+): number => {
+  let currentCount = tokenCounter;
+  let currentToken = lexerTokens[currentCount];
+  while (
+    currentCount < lexerTokens.length &&
+    !separatorSet.has(currentToken.text ?? "")
+  ) {
+    parseAndStoreTokenWithModifier(parsedTokens, currentToken, [
+      { typeNumber: tokenTypes["decorator"] },
+      { typeNumber: tokenModifiers["static"] },
+    ]);
+    currentToken = lexerTokens[++currentCount];
   }
   return currentCount;
 };

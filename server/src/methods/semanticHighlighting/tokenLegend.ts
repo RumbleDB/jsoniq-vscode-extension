@@ -39,7 +39,7 @@ export const tokenTypes = {
   label: 12,
   local_storage: 13,
   unknown: 14,
-  punctuation: 15
+  punctuation: 15,
 };
 
 export const tokenModifiers = {
@@ -51,6 +51,7 @@ export const tokenModifiers = {
   block: 1 << 5,
   documentation: 1 << 6,
   readonly: 1 << 7,
+  defaultLibrary: 1 << 8,
 };
 
 export const tokenLegend: SemanticTokensLegend = {
