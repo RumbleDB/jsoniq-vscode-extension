@@ -1,0 +1,15 @@
+{
+  "scopeName": "source.jsoniq",
+  "patterns": [
+    {
+      "include": "#comment.block.jsoniq"
+    }
+  ],
+  "repository": {
+    "comment.block.jsoniq": {
+      "name": "comment.block.jsoniq",
+      "begin": "\\(\\:",
+      "end": "\\:\\)"
+    }
+  }
+}

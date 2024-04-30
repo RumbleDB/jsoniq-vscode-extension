@@ -23,6 +23,13 @@
         "configuration": "./language-configuration.json"
       }
     ],
+    "grammars": [
+      {
+        "language": "jsoniq",
+        "scopeName": "source.jsoniq",
+        "path": "./syntaxes/jsoniq.tmGrammar.json"
+      }
+    ],
     "semanticTokenTypes": [
       {
         "id": "local_storage",

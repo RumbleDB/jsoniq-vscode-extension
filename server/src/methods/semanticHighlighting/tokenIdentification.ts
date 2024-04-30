@@ -101,7 +101,7 @@ const localStorageSet = new Set(["function", "let", "variable"]);
 
 const operatorSet = new Set([":=", "=", "+", "-", "*", "/", ":", "."]);
 
-const languageFunctionsSet = new Set([
+const builtInFunctionsSet = new Set([
   "count",
   "position",
   "json-file",
@@ -232,27 +232,35 @@ export class TokensParser {
   ): number {
     let currCounter = tokenCounter;
     let currToken = lexerTokens[currCounter];
+    let currTokenText = currToken.text ?? "";
     while (
       currCounter < lexerTokens.length &&
-      !separatorSet.has(currToken.text ?? "")
+      !separatorSet.has(currTokenText)
     ) {
-      if (punctuationSet.has(currToken.text ?? "")) {
+      if (punctuationSet.has(currTokenText)) {
         this.storeTokenWithModifier(parsedTokens, currToken, [
           { typeNumber: tokenTypes["punctuation"] },
           { typeNumber: tokenModifiers["declaration"] },
         ]);
-      } else if (currToken.text === "$$") {
+      } else if (currTokenText === "$$") {
         this.storeTokenWithModifier(parsedTokens, currToken, [
           { typeNumber: tokenTypes["keyword"] },
           {
             typeNumber: tokenModifiers["declaration"],
           },
         ]);
-      } else if (currToken.text?.match(numberMatchingRegexpr)?.input) {
+      } else if (currTokenText.match(numberMatchingRegexpr)?.input) {
         this.storeTokenWithModifier(parsedTokens, currToken, [
           { typeNumber: tokenTypes["number"] },
           {
             typeNumber: tokenModifiers["readonly"],
+          },
+        ]);
+      } else if (builtInFunctionsSet.has(currTokenText)) {
+        this.storeTokenWithModifier(parsedTokens, currToken, [
+          { typeNumber: tokenTypes["function"] },
+          {
+            typeNumber: tokenModifiers["defaultLibrary"],
           },
         ]);
       } else {
@@ -265,6 +273,7 @@ export class TokensParser {
         ]);
       }
       currToken = lexerTokens[++currCounter];
+      currTokenText = currToken.text ?? ""; // needed to handle missing text case
     }
 
     return currCounter;
@@ -384,7 +393,7 @@ export class TokensParser {
       resultTokenModifier = tokenModifiers["declaration"];
     } else if (operatorSet.has(token)) {
       resultTokenType = tokenTypes["operator"];
-    } else if (languageFunctionsSet.has(token)) {
+    } else if (builtInFunctionsSet.has(token)) {
       resultTokenType = tokenTypes["function"];
       resultTokenModifier = tokenModifiers["defaultLibrary"];
     } else if (namespaceSet.has(token)) {
@@ -394,6 +403,9 @@ export class TokensParser {
       resultTokenType = tokenTypes["variable"];
       resultTokenModifier =
         tokenModifiers["readonly"] | tokenModifiers["static"];
+    } else if (punctuationSet.has(token)) {
+      resultTokenType = tokenTypes["punctuation"];
+      resultTokenModifier = tokenModifiers["definition"];
     } else if (token.match(commentMatchingRegexpr)?.input) {
       resultTokenType = tokenTypes["comment"];
       resultTokenModifier = tokenModifiers["declaration"];
