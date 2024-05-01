@@ -1,13 +1,13 @@
 {
-  "name": "REPLACE_ME",
-  "description": "REPLACE_ME",
-  "author": "REPLACE_ME",
+  "name": "jsoniq_language_server",
+  "description": "jsoniq_language_server",
+  "author": "jsoniq_language_server",
   "license": "MIT",
   "version": "0.0.1",
-  "publisher": "REPLACE_ME",
+  "publisher": "jsoniq_language_server",
   "repository": {
     "type": "git",
-    "url": "REPLACE_ME"
+    "url": "jsoniq_language_server"
   },
   "engines": {
     "vscode": "^1.75.0"

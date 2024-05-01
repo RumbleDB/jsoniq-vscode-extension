@@ -1,6 +1,9 @@
 import log from "./log";
 import { initialize } from "./methods/initialize";
-import { semanticTokens } from "./methods/semanticHighlighting/semanticTokens";
+import {
+  rangeSemanticTokens,
+  semanticTokens,
+} from "./methods/semanticHighlighting/semanticTokens";
 import { didChange } from "./methods/textDocument/didChange";
 import { didOpen } from "./methods/textDocument/didOpen";
 
@@ -27,6 +30,7 @@ const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
   initialize,
   "textDocument/didChange": didChange,
   "textDocument/semanticTokens/full": semanticTokens,
+  "textDocument/semanticTokens/range": rangeSemanticTokens,
   "textDocument/didOpen": didOpen,
 };
 

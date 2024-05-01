@@ -93,6 +93,7 @@ const staticModifierSet = new Set([
   "type",
   "true",
   "false",
+  "null",
   "count",
   "position",
 ]);
@@ -158,7 +159,7 @@ const builtInFunctionsSet = new Set([
 ]);
 
 const namespaceSet = new Set(["namespace", "jsoniq"]);
-const constantsSet = new Set(["true", "false", "json"]);
+const constantsSet = new Set(["true", "false", "json", "null"]);
 const commentMatchingRegexpr = /\(:.*?(:\))/;
 const stringMatchingRegexpr = /(?<=\")(.*?)(?=\")/;
 
@@ -267,8 +268,7 @@ export class TokensParser {
         this.storeTokenWithModifier(parsedTokens, currToken, [
           { typeNumber: tokenTypes["property"] },
           {
-            typeNumber:
-              tokenModifiers["definition"] | tokenModifiers["readonly"],
+            typeNumber: tokenModifiers["definition"],
           },
         ]);
       }
@@ -334,7 +334,7 @@ export class TokensParser {
     let currentCounter = tokenCounter;
     this.storeTokenWithModifier(parsedTokens, lexerTokens[currentCounter], [
       { typeNumber: tokenTypes["variable"] },
-      { typeNumber: tokenModifiers["declaration"] },
+      { typeNumber: tokenModifiers["readonly"] },
     ]);
     if (currentCounter + 1 === lexerTokens.length) {
       return currentCounter;
@@ -342,7 +342,7 @@ export class TokensParser {
     let nextToken = lexerTokens[++currentCounter];
     this.storeTokenWithModifier(parsedTokens, nextToken, [
       { typeNumber: tokenTypes["variable"] },
-      { typeNumber: tokenModifiers["declaration"] },
+      { typeNumber: tokenModifiers["readonly"] },
     ]);
     if (currentCounter + 1 === lexerTokens.length) {
       return currentCounter;
@@ -367,10 +367,10 @@ export class TokensParser {
     let tokenDetails: SemanticToken = {
       tokenType: tokenTypeAndModifier[0],
       tokenModifiers: tokenTypeAndModifier[1],
-      startIdx: { line: token.line - 1, index: token.charPositionInLine },
+      startIdx: { line: token.line - 1, character: token.charPositionInLine },
       endIdx: {
         line: token.line - 1,
-        index: token.charPositionInLine + tokenLength,
+        character: token.charPositionInLine + tokenLength,
       },
       tokenLength: tokenLength,
     };

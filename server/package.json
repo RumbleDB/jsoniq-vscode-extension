@@ -1,5 +1,5 @@
 {
-  "name": "JSONiq Syntax Highlighting",
+  "name": "jsoniq_language_server",
   "description": "JSONiq syntax highlighting for Visual Studio Code",
   "version": "1.0.0",
   "author": "David-Marian Buzatu",

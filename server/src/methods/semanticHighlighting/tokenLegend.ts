@@ -1,14 +1,10 @@
 import assert = require("assert");
 import log from "../../log";
+import { Position } from "../../types";
 
 interface SemanticTokensLegend {
   tokenTypes: string[];
   tokenModifiers: string[];
-}
-
-interface Position {
-  line: number;
-  index: number;
 }
 
 export interface TokenType {
@@ -59,23 +55,36 @@ export const tokenLegend: SemanticTokensLegend = {
   tokenModifiers: Object.keys(tokenModifiers),
 };
 
-export const encodeSemanticTokens = (tokens: SemanticToken[]): number[] => {
+export const encodeSemanticTokens = (
+  tokens: SemanticToken[],
+  offset: Position
+): number[] => {
   const result: number[] = [];
-  let previousPosition = { line: 0, index: 0 };
+  const startLine = offset.line;
+  let previousPosition = { line: 0, character: 0 };
+
   for (const token of tokens) {
-    let deltaLine = token.startIdx.line - previousPosition.line;
+    let tokenPosition = {
+      line: token.startIdx.line + offset.line,
+      character: token.startIdx.character,
+    };
+    // Add offset character to first line tokens.
+    if (token.startIdx.line === startLine) {
+      tokenPosition.character += offset.character;
+    }
+    let deltaLine = tokenPosition.line - previousPosition.line;
     // Delta index is relative to previous token in the same line.
     let deltaDiff =
-      previousPosition.line === token.startIdx.line
-        ? previousPosition.index
+      previousPosition.line === tokenPosition.line
+        ? previousPosition.character
         : 0;
-    let deltaIndex = token.startIdx.index - deltaDiff;
+    let deltaIndex = tokenPosition.character - deltaDiff;
 
     assert(deltaLine >= 0, "Delta line must be positive");
     assert(deltaIndex >= 0, "Delta index must be positive");
 
     // Now previous becomes current token's start.
-    previousPosition = token.startIdx;
+    previousPosition = tokenPosition;
 
     result.push(deltaLine);
     result.push(deltaIndex);

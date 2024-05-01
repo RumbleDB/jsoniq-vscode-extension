@@ -4,6 +4,8 @@ import { TokensParser } from "./tokenIdentification";
 import { CharStreams } from "antlr4ts";
 import { jsoniqLexer } from "../../grammar/jsoniqLexer";
 import { encodeSemanticTokens } from "./tokenLegend";
+import { Position, Range } from "../../types";
+import log from "../../log";
 
 type ProgressToken = number | string;
 interface WorkDoneProgressParams {
@@ -18,10 +20,31 @@ interface SemanticTokensParams
   textDocument: TextDocumentIdentifier;
 }
 
+interface RangeSemanticTokensParams
+  extends WorkDoneProgressParams,
+    PartialResultParams {
+  textDocument: TextDocumentIdentifier;
+  range: Range;
+}
+
 interface SemanticTokens {
   resultId?: string;
   data: number[];
 }
+
+const getSemanticTokensFromContent = (
+  content: string,
+  offset: Position = { line: 0, character: 0 }
+) => {
+  let inputStream = CharStreams.fromString(content);
+  let lexer = new jsoniqLexer(inputStream);
+  const lexerTokens = lexer.getAllTokens();
+  const tokenParser = new TokensParser(lexerTokens);
+  const parsedTokens = tokenParser.getSemanticTokens();
+  return {
+    data: encodeSemanticTokens(parsedTokens, offset),
+  };
+};
 
 export const semanticTokens = (message: RequestMessage): SemanticTokens => {
   const params = message.params as SemanticTokensParams;
@@ -31,12 +54,29 @@ export const semanticTokens = (message: RequestMessage): SemanticTokens => {
       data: [],
     };
   }
-  let inputStream = CharStreams.fromString(content);
-  let lexer = new jsoniqLexer(inputStream);
-  const lexerTokens = lexer.getAllTokens();
-  const tokenParser = new TokensParser(lexerTokens);
-  const parsedTokens = tokenParser.getSemanticTokens();
-  return {
-    data: encodeSemanticTokens(parsedTokens),
-  };
+  return getSemanticTokensFromContent(content);
+};
+
+export const rangeSemanticTokens = (
+  message: RequestMessage
+): SemanticTokens => {
+  const params = message.params as RangeSemanticTokensParams;
+  const content = documents.get(params.textDocument.uri);
+  if (!content) {
+    return {
+      data: [],
+    };
+  }
+  const contentLines = content.split(/\r?\n/);
+  const startPosition = params.range.start;
+  const endPosition = params.range.end;
+  let contentForTokens =
+    contentLines[startPosition.line].slice(startPosition.character) + "\n";
+  let lineCnt = startPosition.line + 1;
+  while (lineCnt < endPosition.line) {
+    contentForTokens += contentLines[lineCnt] + "\n";
+    ++lineCnt;
+  }
+  contentForTokens += contentLines[lineCnt].slice(0, endPosition.character);
+  return getSemanticTokensFromContent(contentForTokens, startPosition);
 };

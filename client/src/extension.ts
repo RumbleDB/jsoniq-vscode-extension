@@ -38,8 +38,8 @@ export function activate(context: ExtensionContext) {
 
   // Create the language client and start the client.
   client = new LanguageClient(
-    "REPLACE_ME language-server-id",
-    "REPLACE_ME language server name",
+    "jsoniq_language_server-id",
+    "jsoniq_language_server",
     serverOptions,
     clientOptions
   );
