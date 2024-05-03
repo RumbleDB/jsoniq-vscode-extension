@@ -19,6 +19,10 @@ export const initialize = (message: RequestMessage): InitializeResult => {
         range: true,
         full: { delta: false },
       },
+      diagnosticProvider: {
+        interFileDependencies: false,
+        workspaceDiagnostics: false,
+      },
     },
     serverInfo: {
       name: "jsoniq-language-server",

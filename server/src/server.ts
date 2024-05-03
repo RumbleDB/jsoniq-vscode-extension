@@ -1,4 +1,5 @@
 import log from "./log";
+import { diagnostic } from "./methods/diagnostics/diagnostic";
 import { initialize } from "./methods/initialize";
 import {
   rangeSemanticTokens,
@@ -22,7 +23,10 @@ export interface RequestMessage extends NotificationMessage {
 
 type RequestMethod = (
   message: RequestMessage
-) => ReturnType<typeof initialize> | ReturnType<typeof semanticTokens>;
+) =>
+  | ReturnType<typeof initialize>
+  | ReturnType<typeof semanticTokens>
+  | ReturnType<typeof diagnostic>;
 
 type NotificationMethod = (message: NotificationMessage) => void;
 
@@ -31,6 +35,7 @@ const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
   "textDocument/didChange": didChange,
   "textDocument/semanticTokens/full": semanticTokens,
   "textDocument/semanticTokens/range": rangeSemanticTokens,
+  "textDocument/diagnostic": diagnostic,
   "textDocument/didOpen": didOpen,
 };
 
