@@ -1,4 +1,5 @@
 import log from "./log";
+import { completion } from "./methods/autocomplete/completion";
 import { diagnostic } from "./methods/diagnostics/diagnostic";
 import { initialize } from "./methods/initialize";
 import {
@@ -26,6 +27,7 @@ type RequestMethod = (
 ) =>
   | ReturnType<typeof initialize>
   | ReturnType<typeof semanticTokens>
+  | ReturnType<typeof completion>
   | ReturnType<typeof diagnostic>;
 
 type NotificationMethod = (message: NotificationMessage) => void;
@@ -35,6 +37,7 @@ const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
   "textDocument/didChange": didChange,
   "textDocument/semanticTokens/full": semanticTokens,
   "textDocument/semanticTokens/range": rangeSemanticTokens,
+  "textDocument/completion": completion,
   "textDocument/diagnostic": diagnostic,
   "textDocument/didOpen": didOpen,
 };

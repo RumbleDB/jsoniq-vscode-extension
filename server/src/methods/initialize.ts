@@ -23,6 +23,7 @@ export const initialize = (message: RequestMessage): InitializeResult => {
         interFileDependencies: false,
         workspaceDiagnostics: false,
       },
+      completionProvider: {},
     },
     serverInfo: {
       name: "jsoniq-language-server",
