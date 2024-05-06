@@ -1,5 +1,5 @@
-import { DocumentUri, documents } from "../../documents";
-import { NotificationMessage } from "../../server";
+import { DocumentUri, documents } from "../../documents.js";
+import { NotificationMessage } from "../../server.js";
 
 type TextDocumentItem = {
   uri: DocumentUri;

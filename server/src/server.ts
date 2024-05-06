@@ -1,13 +1,13 @@
-import log from "./log";
-import { completion } from "./methods/autocomplete/completion";
-import { diagnostic } from "./methods/diagnostics/diagnostic";
-import { initialize } from "./methods/initialize";
+import log from "./log.js";
+import { completion } from "./methods/autocomplete/completion.js";
+import { diagnostic } from "./methods/diagnostics/diagnostic.js";
+import { initialize } from "./methods/initialize.js";
 import {
   rangeSemanticTokens,
   semanticTokens,
-} from "./methods/semanticHighlighting/semanticTokens";
-import { didChange } from "./methods/textDocument/didChange";
-import { didOpen } from "./methods/textDocument/didOpen";
+} from "./methods/semanticHighlighting/semanticTokens.js";
+import { didChange } from "./methods/textDocument/didChange.js";
+import { didOpen } from "./methods/textDocument/didOpen.js";
 
 interface Message {
   jsonrpc: string;

@@ -1,6 +1,6 @@
 import assert = require("assert");
-import log from "../../log";
-import { Position } from "../../types";
+import log from "../../log.js";
+import { Position } from "../../types.js";
 
 interface SemanticTokensLegend {
   tokenTypes: string[];

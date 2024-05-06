@@ -1,6 +1,17 @@
-import { TextDocumentIdentifier, documents } from "../../documents";
-import { RequestMessage } from "../../server";
-import { Position } from "../../types";
+import {
+  CharStream,
+  CommonTokenStream,
+  ParseTree,
+  Parser,
+  TerminalNode,
+} from "antlr4ng";
+import { TextDocumentIdentifier, documents } from "../../documents.js";
+import { jsoniqLexer } from "../../grammar/antlr4ng/jsoniqLexer.js";
+import { RequestMessage } from "../../server.js";
+import { Position } from "../../types.js";
+import { jsoniqParser } from "../../grammar/antlr4ng/jsoniqParser.js";
+import { CodeCompletionCore } from "antlr4-c3";
+import log from "../../log.js";
 
 export interface CompletionItem {
   label: string;
@@ -26,15 +37,74 @@ export const completion = (message: RequestMessage): CompletionList | null => {
     return null;
   }
 
-  const currentLine = content.split("\n")[params.position.line];
-  const lineUntilCursor = currentLine.slice(0, params.position.character);
-  // Regex source: https://www.youtube.com/watch?v=Xo5VXTRoL6Q
-  const currentPrefix = lineUntilCursor.replace(/.*\W(.*?)/, "$1");
+  const inputStream = CharStream.fromString(content);
+  const lexer = new jsoniqLexer(inputStream);
+  const parser = new jsoniqParser(new CommonTokenStream(lexer));
 
-  // Filter list of possible items
+  // Get index
+  const index =
+    computeTokenIndex(parser.moduleAndThisIsIt(), params.position) ?? 0;
+  const core = new CodeCompletionCore(parser);
+  // Ignore tokens
+  //   core.ignoredTokens = new Set([jsoniqParser.])
+  const candidates = core.collectCandidates(index);
+  const items: CompletionItem[] = [];
+  candidates.tokens.forEach((_, token) => {
+    const symbolicName = parser.vocabulary.getSymbolicName(token);
+    if (symbolicName) {
+      items.push({
+        label: symbolicName.toLowerCase(),
+      });
+    }
+  });
+  log.write(`items:`);
+  log.write(items);
 
   return {
     isIncomplete: false,
-    items: [{ label: "TypeScript" }, { label: "test" }],
+    items,
   };
 };
+
+function computeTokenIndex(
+  parseTree: ParseTree,
+  caretPosition: Position
+): number | undefined {
+  if (parseTree instanceof TerminalNode) {
+    return computeTokenIndexOfTerminalNode(parseTree, caretPosition);
+  } else {
+    return computeTokenIndexOfChildNode(parseTree, caretPosition);
+  }
+}
+
+function computeTokenIndexOfTerminalNode(
+  parseTree: TerminalNode,
+  caretPosition: Position
+) {
+  let start = parseTree.symbol.column;
+  let stop = parseTree.symbol.column + (parseTree.symbol.text?.length ?? 0);
+  if (
+    parseTree.symbol.line == caretPosition.line &&
+    start <= caretPosition.character &&
+    stop >= caretPosition.character
+  ) {
+    return parseTree.symbol.tokenIndex;
+  } else {
+    return undefined;
+  }
+}
+function computeTokenIndexOfChildNode(
+  parseTree: ParseTree,
+  caretPosition: Position
+) {
+  for (let i = 0; i < parseTree.getChildCount(); i++) {
+    let child = parseTree.getChild(i);
+    if (child != null) {
+      let index = computeTokenIndex(child, caretPosition);
+      if (index !== undefined) {
+        return index;
+      }
+    }
+  }
+  return undefined;
+}

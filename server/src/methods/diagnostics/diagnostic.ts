@@ -1,11 +1,11 @@
-import { RequestMessage } from "../../server";
-import { Range } from "../../types";
-import log from "../../log";
-import { TextDocumentIdentifier, documents } from "../../documents";
+import { RequestMessage } from "../../server.js";
+import { Range } from "../../types.js";
+import log from "../../log.js";
+import { TextDocumentIdentifier, documents } from "../../documents.js";
 import { CharStreams, CommonTokenStream } from "antlr4ts";
-import { jsoniqLexer } from "../../grammar/jsoniqLexer";
-import { jsoniqParser } from "../../grammar/jsoniqParser";
-import { DiagnosticErrorListener } from "./errorListener";
+import { jsoniqLexer } from "../../grammar/jsoniqLexer.js";
+import { jsoniqParser } from "../../grammar/jsoniqParser.js";
+import { DiagnosticErrorListener } from "./errorListener.js";
 
 interface DocumentDiagnosticParams {
   textDocument: TextDocumentIdentifier;

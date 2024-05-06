@@ -4,7 +4,7 @@ import {
   Recognizer,
   Token,
 } from "antlr4ts";
-import { Diagnostic } from "./diagnostic";
+import { Diagnostic } from "./diagnostic.js";
 
 export class DiagnosticErrorListener implements ParserErrorListener {
   private _items: Diagnostic[];

@@ -4,8 +4,8 @@ import {
   TokenType,
   tokenModifiers,
   tokenTypes,
-} from "./tokenLegend";
-import log from "../../log";
+} from "./tokenLegend.js";
+import log from "../../log.js";
 
 const keywordSet = new Set([
   "module",
