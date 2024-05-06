@@ -50,8 +50,9 @@ export const completion = (message: RequestMessage): CompletionList | null => {
   const candidates = core.collectCandidates(index);
   const items: CompletionItem[] = [];
   candidates.tokens.forEach((_, token) => {
-    const symbolicName = parser.vocabulary.getSymbolicName(token);
+    let symbolicName = parser.vocabulary.getLiteralName(token);
     if (symbolicName) {
+      symbolicName = symbolicName.replace(/["']/g, "");
       items.push({
         label: symbolicName.toLowerCase(),
       });
