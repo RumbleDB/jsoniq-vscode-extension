@@ -138,4 +138,60 @@ describe("jsoniq-language-server", () => {
     await wait(20);
     expect(languageServer.process?.exitCode).toBe(0);
   });
+
+  test("can initialize and give diagnostics", async () => {
+    await init();
+    didOpen(`for $store in $stores
+    for $state in $states
+    where $state.code eq $store.state
+    group by $code := $state.code
+    order by $code
+    return $res := $res, { "code" : $code, "stores" : count($store) };`);
+
+    const expectedDiagnostics = `mismatched input ',' expecting {';', '=', '(', '*', 'eq', 'ne', 'lt', 'le', 'gt', 'ge', '!=', '<', '<=', '>', '>=', '||', '+', '-', 'div', 'idiv', 'mod', '!', '[', '.', 'or', 'and', 'to', 'instance', 'is', 'treat', 'cast', 'castable'}`;
+
+    const diagnostics = (await languageServer.request(
+      "textDocument/diagnostic",
+      { textDocument: { uri: defaultFile } }
+    )) as FullDocumentDiagnosticReport;
+
+    expect(diagnostics).toStrictEqual({
+      kind: "full",
+      items: [
+        {
+          severity: 1,
+          message: expectedDiagnostics,
+          range: {
+            start: { line: 5, character: 23 },
+            end: { line: 5, character: 24 },
+          },
+          source: "JSONiq language server",
+        },
+      ],
+    });
+  });
+
+  test("can initialize and give semantic tokens", async () => {
+    await init();
+    didOpen(
+      `return $res := $res, { "code" : $code, "stores" : count($store) };`
+    );
+    const expectedData = {
+      data: [
+        0, 0, 6, 2, 1, 0, 7, 1, 3, 128, 0, 1, 3, 3, 128, 0, 0, 3, 5, 4, 0, 4, 2,
+        10, 0, 0, 3, 1, 3, 128, 0, 1, 3, 3, 128, 0, 0, 3, 5, 4, 0, 5, 1, 6, 128,
+        0, 2, 6, 8, 1, 0, 7, 1, 10, 0, 0, 2, 1, 3, 128, 0, 1, 4, 3, 128, 0, 0,
+        4, 5, 4, 0, 6, 8, 8, 1, 0, 9, 1, 10, 0, 0, 2, 5, 6, 258, 0, 5, 1, 15, 4,
+        0, 1, 1, 3, 128, 0, 1, 5, 3, 128, 0, 0, 5, 5, 4, 0, 5, 1, 15, 1, 0, 2,
+        1, 6, 128,
+      ],
+    };
+
+    const semanticTokens = await languageServer.request(
+      "textDocument/semanticTokens/full",
+      { textDocument: { uri: defaultFile } }
+    );
+
+    expect(semanticTokens).toStrictEqual(expectedData);
+  });
 });
