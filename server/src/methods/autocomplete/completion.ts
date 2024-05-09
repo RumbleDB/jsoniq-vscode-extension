@@ -47,6 +47,9 @@ export const completion = (message: RequestMessage): CompletionList | null => {
   const core = new CodeCompletionCore(parser);
   // Ignore tokens
   //   core.ignoredTokens = new Set([jsoniqParser.])
+
+  // Add rules
+  core.preferredRules = new Set([jsoniqParser.RULE_qname]);
   const candidates = core.collectCandidates(index);
   const items: CompletionItem[] = [];
   candidates.tokens.forEach((_, token) => {
@@ -58,8 +61,6 @@ export const completion = (message: RequestMessage): CompletionList | null => {
       });
     }
   });
-  log.write(`items:`);
-  log.write(items);
 
   return {
     isIncomplete: false,
