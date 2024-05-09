@@ -729,6 +729,21 @@ fragment HEX: [0-9a-fA-F];
 
 ArgumentPlaceholder: '?';
 
+Plus: '+';
+Minus: '-';
+Times: '*';
+Div: '/';
+ReferenceSymbol: '$';
+BracketOpen: '(';
+BracketClose: ')';
+ReferenceContextSymbol: '$$';
+BraceOpen: '{';
+BraceClose: '}';
+BraceOr: '{|';
+SquareBracketOpen: '[';
+SquareBracketClose: ']';
+AnnotationSymbol: '%';
+
 NullLiteral: 'null';
 
 Literal: NumericLiteral;

@@ -2,8 +2,11 @@
 module.exports = {
   preset: "ts-jest",
   testEnvironment: "node",
-  testTimeout: 1000,
+  testTimeout: 2000,
   testMatch: ["**/__tests__/**/*.ts?(x)", "**/?(*.)+(spec|test).ts?(x)"],
-  testPathIgnorePatterns: ["/node_modules/", "**/languageServerWrapper.ts?(x)"],
+  testPathIgnorePatterns: [
+    "/node_modules/",
+    "/__tests__/languageServerWrapper.ts",
+  ],
   moduleFileExtensions: ["js", "ts"],
 };

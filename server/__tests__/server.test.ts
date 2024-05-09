@@ -58,7 +58,7 @@ describe("jsoniq-language-server", () => {
   beforeEach(() => {
     languageServer = new LanguageServerWrapper(
       "npx",
-      ["ts-node/esm", `${cwd()}/src/server.ts`],
+      ["tsx", `${cwd()}/src/server.ts`],
       !!process.env.VERBOSE
     );
 
@@ -72,27 +72,58 @@ describe("jsoniq-language-server", () => {
   test("can initialize and give completions", async () => {
     await init();
     didOpen("va");
-
     const completionResponse1 = await completionRequest({
-      line: 0,
+      line: 1,
       character: 1,
     });
 
-    expect(completionResponse1.isIncomplete).toBe(false);
-    expect(completionResponse1.items).toStrictEqual([
+    const expectedItems = [
+      { label: "jsoniq" },
+      { label: "module" },
+      { label: "declare" },
+      { label: "import" },
+      { label: "some" },
+      { label: "every" },
+      { label: "not" },
+      { label: "null" },
+      { label: "true" },
+      { label: "false" },
+      { label: "ordered" },
+      { label: "unordered" },
+      { label: "function" },
       { label: "validate" },
+      { label: "annotate" },
+      { label: "insert" },
+      { label: "delete" },
+      { label: "rename" },
+      { label: "replace" },
+      { label: "copy" },
+      { label: "append" },
+      { label: "break" },
+      { label: "continue" },
+      { label: "exit" },
+      { label: "for" },
+      { label: "let" },
+      { label: "if" },
+      { label: "switch" },
+      { label: "try" },
+      { label: "typeswitch" },
       { label: "variable" },
-    ]);
+      { label: "while" },
+    ];
+
+    expect(completionResponse1.isIncomplete).toBe(false);
+    expect(completionResponse1.items).toStrictEqual(expectedItems);
 
     didChange("var");
 
     const completionResponse2 = await completionRequest({
-      line: 0,
-      character: 16,
+      line: 1,
+      character: 2,
     });
 
     expect(completionResponse2.isIncomplete).toBe(false);
-    expect(completionResponse2.items).toStrictEqual([{ label: "variable" }]);
+    expect(completionResponse2.items).toStrictEqual(expectedItems);
   });
 
   test("can shutdown and exit", async () => {

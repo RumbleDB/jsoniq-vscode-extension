@@ -1,11 +1,13 @@
 import log from "./log.js";
 import { completion } from "./methods/autocomplete/completion.js";
 import { diagnostic } from "./methods/diagnostics/diagnostic.js";
+import { exit } from "./methods/exit.js";
 import { initialize } from "./methods/initialize.js";
 import {
   rangeSemanticTokens,
   semanticTokens,
 } from "./methods/semanticHighlighting/semanticTokens.js";
+import { shutdown } from "./methods/shutdown.js";
 import { didChange } from "./methods/textDocument/didChange.js";
 import { didOpen } from "./methods/textDocument/didOpen.js";
 
@@ -40,6 +42,8 @@ const methodLookup: Record<string, RequestMethod | NotificationMethod> = {
   "textDocument/completion": completion,
   "textDocument/diagnostic": diagnostic,
   "textDocument/didOpen": didOpen,
+  shutdown,
+  exit,
 };
 
 const respond = (id: RequestMessage["id"], result: object | null) => {
@@ -55,7 +59,6 @@ let buffer = "";
 // This is just a chunk. It may be the beginning of a message, the end of it, or some other bit. We therefore need to buffer this data.
 process.stdin.on("data", (chunk) => {
   buffer += chunk;
-
   while (true) {
     // Check for the Content-Length header
     const lengthMatch = buffer.match(/Content-Length: (\d+)\r\n/);
