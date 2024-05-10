@@ -40,11 +40,11 @@ export const completion = (message: RequestMessage): CompletionList | null => {
   const inputStream = CharStream.fromString(content);
   const lexer = new jsoniqLexer(inputStream);
   const parser = new jsoniqParser(new CommonTokenStream(lexer));
+  const parseTree = parser.moduleAndThisIsIt();
   // Override error listener as we only want completion behavior.
   parser.removeErrorListeners();
   // Get index
-  const index =
-    computeTokenIndex(parser.moduleAndThisIsIt(), params.position) ?? 0;
+  const index = computeTokenIndex(parseTree, params.position) ?? 0;
   const core = new CodeCompletionCore(parser);
   // Ignore tokens
   core.ignoredTokens = new Set([
@@ -63,6 +63,16 @@ export const completion = (message: RequestMessage): CompletionList | null => {
     jsoniqParser.SquareBracketOpen,
     jsoniqParser.SquareBracketClose,
     jsoniqParser.AnnotationSymbol,
+    jsoniqParser.Dot,
+    jsoniqParser.Exclamation,
+    jsoniqParser.Equal,
+    jsoniqParser.Or,
+    jsoniqParser.Not,
+    jsoniqParser.Less,
+    jsoniqParser.LessEq,
+    jsoniqParser.Greater,
+    jsoniqParser.GreaterEq,
+    jsoniqParser.Comma,
   ]);
 
   // Add rules
