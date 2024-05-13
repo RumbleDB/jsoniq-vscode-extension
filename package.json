@@ -3,7 +3,7 @@
   "description": "JSONiq language features for Visual Studio Code",
   "author": "JSONiq Development Team",
   "license": "MIT",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "publisher": "jsoniq-development-team",
   "repository": {
     "type": "git",
