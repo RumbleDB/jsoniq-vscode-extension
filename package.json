@@ -1,10 +1,14 @@
 {
-  "name": "jsoniq_lsp",
-  "description": "JSONiq syntax highlighting for Visual Studio Code",
-  "author": "David-Marian Buzatu",
+  "name": "jsoniq",
+  "description": "JSONiq language features for Visual Studio Code",
+  "author": "JSONiq Development Team",
   "license": "MIT",
   "version": "1.0.0",
-  "publisher": "David-Marian Buzatu",
+  "publisher": "jsoniq-development-team",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavidBuzatu-Marian/Jsoniq-LanguageServer"
+  },
   "categories": [],
   "engines": {
     "vscode": "^1.75.0"

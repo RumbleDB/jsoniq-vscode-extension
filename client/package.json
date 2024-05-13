@@ -1,13 +1,13 @@
 {
-  "name": "jsoniq_language_server",
-  "description": "jsoniq_language_server",
-  "author": "jsoniq_language_server",
+  "name": "jsoniq",
+  "description": "JSONiq language features extension for Visual Studio Code",
+  "author": "JSONiq Development Team",
   "license": "MIT",
-  "version": "0.0.1",
-  "publisher": "jsoniq_language_server",
+  "version": "1.0.0",
+  "publisher": "jsoniq-development-team",
   "repository": {
     "type": "git",
-    "url": "jsoniq_language_server"
+    "url": "https://github.com/DavidBuzatu-Marian/Jsoniq-LanguageServer"
   },
   "engines": {
     "vscode": "^1.75.0"

@@ -1,8 +1,8 @@
 {
-  "name": "jsoniq_language_server",
-  "description": "JSONiq syntax highlighting for Visual Studio Code",
+  "name": "jsoniq-language-server",
+  "description": "JSONiq syntax highlighting for Visual Studio Code through language server adaptation",
   "version": "1.0.0",
-  "author": "David-Marian Buzatu",
+  "author": "JSONiq Development Team",
   "license": "MIT",
   "type": "module",
   "engines": {
