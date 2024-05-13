@@ -1,7 +1,7 @@
 {
   // FROM : https://github.com/microsoft/vscode/blob/main/extensions/typescript-basics/language-configuration.json
   "comments": {
-    "lineComment": "(:",
+    // "lineComment": "(:",
     "blockComment": ["(:", ":)"]
   },
   "brackets": [

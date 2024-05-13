@@ -160,10 +160,10 @@ const builtInFunctionsSet = new Set([
 
 const namespaceSet = new Set(["namespace", "jsoniq"]);
 const constantsSet = new Set(["true", "false", "json", "null"]);
-const commentMatchingRegexpr = /\(:.*?(:\))/;
+const commentMatchingRegexpr = /\(:((.|\n)*)(:\))/;
 const stringMatchingRegexpr = /(?<=\")(.*?)(?=\")/;
 
-const numberMatchingRegexpr = /\d+/;
+const numberMatchingRegexpr = /\d+$/;
 const separatorSet = new Set([" ", "\n", "\t", ";", ","]);
 const punctuationSet = new Set([".", "[", "]", "(", ")", ","]);
 
@@ -388,6 +388,7 @@ export class TokensParser {
     }
     let resultTokenType = tokenTypes["unknown"];
     let resultTokenModifier = 0;
+    log.write(`Token: ${token}`);
     if (keywordSet.has(token)) {
       resultTokenType = tokenTypes["keyword"];
       resultTokenModifier = tokenModifiers["declaration"];
