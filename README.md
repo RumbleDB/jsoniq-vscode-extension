@@ -1,8 +1,8 @@
 # JSONiq Language Server
 
-[![Version](https://vsmarketplacebadge.apphb.com/version/dbuzatu.jsoniq-language-server.svg)](1.0.0)
-[![Installs](https://vsmarketplacebadge.apphb.com/installs-short/dbuzatu.jsoniq-language-server.svg)](https://marketplace.visualstudio.com/manage/publishers/jsoniq-development-team/extensions/jsoniq/hub?_a=acquisition)
-[![Ratings](https://vsmarketplacebadge.apphb.com/rating-short/dbuzatu.jsoniq-language-server.svg)](https://marketplace.visualstudio.com/manage/publishers/jsoniq-development-team/extensions/jsoniq/hub?_a=review)
+![JSONiq](images/JSONiq.png)
+![Installs](https://img.shields.io/visual-studio-marketplace/i/jsoniq-development-team.jsoniq)
+![Review Count](https://img.shields.io/visual-studio-marketplace/r/jsoniq-development-team.jsoniq)
 
 A Visual Studio Code extension for the JSONiq programming language and the RumbleDB engine. It provides language features such as semantic highlighting, code completion, and diagnostics through a language server.
 
