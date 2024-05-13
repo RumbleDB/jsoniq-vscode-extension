@@ -1,0 +1,32 @@
+{
+  "manifestVersion": 1,
+  "id": "jsoniq-development-team.jsoniq",
+  "version": "1.0.2",
+  "name": "jsoniq",
+  "publisher": "jsoniq-development-team",
+  "description": "JSONiq language features extension for Visual Studio Code",
+  "targets": [
+    {
+      "id": "Microsoft.VisualStudio.Services"
+    }
+  ],
+  "icons": {
+    "default": "images/JSONiq.png"
+  },
+  "scopes": ["vso.work", "vso.code_write", "vso.build_execute"],
+  "content": {
+    "details": {
+      "path": "readme.md"
+    }
+  },
+  "categories": ["Azure Boards"],
+  "links": {
+    "getstarted": {
+      "uri": "https://www.jsoniq.org"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "uri": "https://github.com/DavidBuzatu-Marian/Jsoniq-LanguageServer"
+  }
+}
