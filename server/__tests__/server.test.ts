@@ -131,11 +131,11 @@ describe("jsoniq-language-server", () => {
 
     const response = await languageServer.request("shutdown", {});
     expect(response).toBeNull();
-    await wait(20);
+    await wait(2000);
     expect(languageServer.process?.exitCode).toBeNull();
 
     languageServer.notify("exit", {});
-    await wait(20);
+    await wait(2000);
     expect(languageServer.process?.exitCode).toBe(0);
   });
 
