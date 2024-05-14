@@ -1,11 +1,11 @@
-import { TextDocumentIdentifier, documents } from "../../documents";
-import { RequestMessage } from "../../server";
-import { TokensParser } from "./tokenIdentification";
+import { TextDocumentIdentifier, documents } from "../../documents.js";
+import { RequestMessage } from "../../server.js";
+import { TokensParser } from "./tokenIdentification.js";
 import { CharStreams } from "antlr4ts";
-import { jsoniqLexer } from "../../grammar/jsoniqLexer";
-import { encodeSemanticTokens } from "./tokenLegend";
-import { Position, Range } from "../../types";
-import log from "../../log";
+import { jsoniqLexer } from "../../grammar/jsoniqLexer.js";
+import { encodeSemanticTokens } from "./tokenLegend.js";
+import { Position, Range } from "../../types.js";
+import log from "../../log.js";
 
 type ProgressToken = number | string;
 interface WorkDoneProgressParams {

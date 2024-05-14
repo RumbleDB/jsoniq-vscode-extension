@@ -1,9 +1,9 @@
-import { NotificationMessage } from "../../server";
+import { NotificationMessage } from "../../server.js";
 import {
   documents,
   VersionedTextDocumentIdentifier,
   TextDocumentContentChangeEvent,
-} from "../../documents";
+} from "../../documents.js";
 
 interface DidChangeTextDocumentParams {
   textDocument: VersionedTextDocumentIdentifier;

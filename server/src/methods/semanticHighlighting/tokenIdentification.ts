@@ -4,8 +4,8 @@ import {
   TokenType,
   tokenModifiers,
   tokenTypes,
-} from "./tokenLegend";
-import log from "../../log";
+} from "./tokenLegend.js";
+import log from "../../log.js";
 
 const keywordSet = new Set([
   "module",
@@ -160,10 +160,10 @@ const builtInFunctionsSet = new Set([
 
 const namespaceSet = new Set(["namespace", "jsoniq"]);
 const constantsSet = new Set(["true", "false", "json", "null"]);
-const commentMatchingRegexpr = /\(:.*?(:\))/;
+const commentMatchingRegexpr = /\(:((.|\n)*)(:\))/;
 const stringMatchingRegexpr = /(?<=\")(.*?)(?=\")/;
 
-const numberMatchingRegexpr = /\d+/;
+const numberMatchingRegexpr = /\d+$/;
 const separatorSet = new Set([" ", "\n", "\t", ";", ","]);
 const punctuationSet = new Set([".", "[", "]", "(", ")", ","]);
 
@@ -273,6 +273,9 @@ export class TokensParser {
         ]);
       }
       currToken = lexerTokens[++currCounter];
+      if (currToken === undefined) {
+        break;
+      }
       currTokenText = currToken.text ?? ""; // needed to handle missing text case
     }
 
@@ -337,7 +340,7 @@ export class TokensParser {
       { typeNumber: tokenModifiers["readonly"] },
     ]);
     if (currentCounter + 1 === lexerTokens.length) {
-      return currentCounter;
+      return currentCounter + 1;
     }
     let nextToken = lexerTokens[++currentCounter];
     this.storeTokenWithModifier(parsedTokens, nextToken, [
@@ -345,7 +348,7 @@ export class TokensParser {
       { typeNumber: tokenModifiers["readonly"] },
     ]);
     if (currentCounter + 1 === lexerTokens.length) {
-      return currentCounter;
+      return currentCounter + 1;
     }
     return this.parseAttributes(parsedTokens, lexerTokens, currentCounter);
   }
@@ -385,6 +388,7 @@ export class TokensParser {
     }
     let resultTokenType = tokenTypes["unknown"];
     let resultTokenModifier = 0;
+    log.write(`Token: ${token}`);
     if (keywordSet.has(token)) {
       resultTokenType = tokenTypes["keyword"];
       resultTokenModifier = tokenModifiers["declaration"];
