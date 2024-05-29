@@ -7,7 +7,7 @@
   "publisher": "jsoniq-development-team",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DavidBuzatu-Marian/Jsoniq-LanguageServer"
+    "url": "https://github.com/DavidBuzatu-Marian/Jsoniq-VSCode-Extension"
   },
   "engines": {
     "vscode": "^1.75.0"

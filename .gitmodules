@@ -1,0 +1,3 @@
+[submodule "server_language"]
+	path = server_language
+	url = https://github.com/DavidBuzatu-Marian/JSONiq-LanguageServer
