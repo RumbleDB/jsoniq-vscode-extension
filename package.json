@@ -63,7 +63,6 @@
     "typescript": "^5.2.2"
   },
   "dependencies": {
-    "jsoniq-language-server": "file:server_language",
     "ts-node": "^10.9.2"
   }
 }
