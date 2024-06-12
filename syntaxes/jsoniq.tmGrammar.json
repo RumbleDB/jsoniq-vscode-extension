@@ -2,14 +2,46 @@
   "scopeName": "source.jsoniq",
   "patterns": [
     {
-      "include": "#comment.block.jsoniq"
+      "name": "comment.block.jsoniq",
+      "begin": "\\(\\:",
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.js"
+        }
+      },
+      "end": "\\:\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.js"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#nested-comment"
+        }
+      ]
     }
   ],
   "repository": {
-    "comment.block.jsoniq": {
+    "nested-comment": {
       "name": "comment.block.jsoniq",
       "begin": "\\(\\:",
-      "end": "\\:\\)"
+      "beginCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.js"
+        }
+      },
+      "end": "\\:\\)",
+      "endCaptures": {
+        "0": {
+          "name": "punctuation.definition.comment.js"
+        }
+      },
+      "patterns": [
+        {
+          "include": "#nested-comment"
+        }
+      ]
     }
   }
 }
