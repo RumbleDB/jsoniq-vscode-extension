@@ -67,7 +67,7 @@
       "pattern": "^.*(\\{[^}]*|\\([^)]*|\\[[^\\]]*)$"
     },
     "indentNextLinePattern": {
-      "pattern": "^((.*[^\\w]+|\\s*)(then|else|returning)\\s*|((.*[^\\w]+|\\s*)(if|while|for|switch|typeswitch)\\s*\\(.*\\)\\s*))$"
+      "pattern": "^((.*[^\\w]+|\\s*)(then|else|returning|let)\\s*|((.*[^\\w]+|\\s*)(if|while|for|switch|typeswitch)\\s*\\(.*\\)\\s*))$"
     }
   },
   "onEnterRules": [
