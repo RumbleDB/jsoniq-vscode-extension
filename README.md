@@ -14,15 +14,14 @@ A Visual Studio Code extension for the JSONiq programming language and the Rumbl
 
 ## Requirements
 
-- Visual Studio Code version 1.60.0 or higher.
+- Visual Studio Code version 1.75.0 or higher.
 
 ## Installation
 
 1. Open Visual Studio Code.
 2. Go to the Extensions view (Ctrl+Shift+X).
-3. Search for "JSONiq Language Server".
+3. Search for "jsoniq".
 4. Click Install to install the extension.
-5. Restart Visual Studio Code.
 
 ## Usage
 
@@ -31,7 +30,7 @@ A Visual Studio Code extension for the JSONiq programming language and the Rumbl
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+This project is licensed under the [Apache-2.0 License](LICENSE).
 
 ## Contact
 
